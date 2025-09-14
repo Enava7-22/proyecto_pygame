@@ -12,7 +12,7 @@ pygame.display.set_caption("first level")
 jugador = pygame.Rect(560,alto//2,40,70)
 velocidad_jugador= 10
 imagen_jugador=pygame.image.load("l1/personaje.png")
-imagen_jugador=pygame.transform.scale(imagen_jugador,(jugador.width,jugador.height))
+imagen_jugador=pygame.transform.scale(imagen_jugador,(20,20))
 
 fondo = pygame.image.load("l1/fondolevel1.png")
 fondo=pygame.transform.scale(fondo,(ancho,alto))
@@ -24,7 +24,12 @@ pared = [
     pygame.Rect(399,450,480,8),
     pygame.Rect(399,280,90,8),
     pygame.Rect(596,280,287 ,8),
-    pygame.Rect(399,240,90,8),
+    pygame.Rect(428,225,359,8),
+    pygame.Rect(370,513,517,6),
+    pygame.Rect(370,80,900,6),
+    pygame.Rect(370,80,900,6),
+    
+    
     
         
 ]

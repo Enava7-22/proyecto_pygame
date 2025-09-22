@@ -1,100 +1,107 @@
 import pygame
 import sys
-import random
+import subprocess
 
 pygame.init()
-ancho = 1200
-alto = 700
 
+def menulevels():
+    ancho = 1200
+    alto = 700
+    ventana = pygame.display.set_mode((ancho,alto))
+    pygame.display.set_caption("ml")
 
-def juego_nivel1():
-    ventana_nivel = pygame.display.set_mode((ancho, alto))
-    pygame.display.set_caption("first level")
-    
-    fondo = pygame.image.load("level1picture/fondolevel1.png")
-    fondo = pygame.transform.scale(fondo, (ancho, alto))
-    
-    jugador = pygame.Rect(560, alto // 2, 40, 40)
-    velocidad_jugador = 5
-    red = (255, 0, 0)
-    
+    botones_ancho , botones_alto = 300,100
+
+    fondo = pygame.image.load("menulevels.jpg")
+    fondo = pygame.transform.scale(fondo,(ancho,alto))
+
+    boton_level1 =pygame.image.load("boton level1.png")
+    boton_level1 =pygame.transform.scale(boton_level1,(botones_ancho,botones_alto))
+
+    botonl1 = pygame.Rect(450,100,botones_ancho,botones_alto)
+
+    x1 = 0
+    x2 = ancho
+    velocidad = 2 
+
     clock = pygame.time.Clock()
-    
-    ejecutar_nivel = True
-    while ejecutar_nivel:
+
+    while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                if botonl1.collidepoint(event.pos):
+                    pygame.quit()
+                    subprocess.run(["python","l1.py"])
+                    sys.exit()
+                    
+        x1 -= velocidad
+        x2 -= velocidad
+        if x1 <= -ancho:
+            x1 = x2 + ancho
+        if x2 <= -ancho:
+            x2 = x1 + ancho
         
-        teclas = pygame.key.get_pressed()
-        if teclas[pygame.K_LEFT] and jugador.left > 0:
-            jugador.x -= velocidad_jugador
-        if teclas[pygame.K_RIGHT] and jugador.right < ancho:
-            jugador.x += velocidad_jugador
-        if teclas[pygame.K_UP] and jugador.top > 0:
-            jugador.y -= velocidad_jugador
-        if teclas[pygame.K_DOWN] and jugador.bottom < alto:
-            jugador.y += velocidad_jugador  
-
-        ventana_nivel.fill((0, 0, 0))
-        ventana_nivel.blit(fondo, (0, 0))
-        pygame.draw.rect(ventana_nivel, red, jugador)
+        ventana.blit(fondo,(x1,0))
+        ventana.blit(fondo,(x2,0))
+        ventana.blit(boton_level1,(botonl1.x,botonl1.y))
         pygame.display.flip()
         clock.tick(60)
+        
+    pygame.quit()
+    sys.exit()
 
+def mainlevel():
+    ancho = 1200
+    alto = 700
+    ancho_botones=300
+    alto_botones=100
 
-ventana = pygame.display.set_mode((ancho, alto))
-pygame.display.set_caption("integrador equipo 6")
+    ventana = pygame.display.set_mode((ancho, alto))
+    pygame.display.set_caption("integrador equpo 6")
 
-fondo_menu = pygame.image.load("menupic/img.jpg")
-fondo_menu = pygame.transform.scale(fondo_menu, (ancho, alto))
+    fondo = pygame.image.load("img.jpg")
+    fondo = pygame.transform.scale(fondo, (ancho, alto))
+    botones= pygame.image.load("boton inicio.png")
+    botones= pygame.transform.scale(botones,(ancho_botones,alto_botones))
+    configuracion =pygame.image.load("boton configuracion.png")
+    configuracion = pygame.transform.scale(configuracion,(ancho_botones,alto_botones))
 
-ancho_botones = 300
-alto_botones = 100
+    boton_inicio_rect = pygame.Rect(450,300,ancho_botones,alto_botones)
 
-boton_inicio_img = pygame.image.load("menupic/boton inicio.png")
-boton_inicio_img = pygame.transform.scale(boton_inicio_img, (ancho_botones, alto_botones))
-boton_config_img = pygame.image.load("menupic/boton configuracion.png")
-boton_config_img = pygame.transform.scale(boton_config_img, (ancho_botones, alto_botones))
+    x1 = 0
+    x2 = ancho
+    velocidad = 2 
+    reloj = pygame.time.Clock()
+    ejecutar = True
 
+    while ejecutar:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                ejecutar = False
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:  
+                if boton_inicio_rect.collidepoint(event.pos):  
+                    menulevels()   
 
-boton_inicio_rect = pygame.Rect(450, 300, ancho_botones, alto_botones)
-boton_config_rect = pygame.Rect(450, 450, ancho_botones, alto_botones)
+        x1 -= velocidad
+        x2 -= velocidad
 
-x1 = 0
-x2 = ancho
-velocidad = 2
+        if x1 <= -ancho:
+            x1 = x2 + ancho
+        if x2 <= -ancho:
+            x2 = x1 + ancho
 
-reloj = pygame.time.Clock()
-ejecutar = True
+        ventana.blit(fondo, (x1, 0))
+        ventana.blit(fondo, (x2, 0))
+        ventana.blit(botones,(450,300))
+        ventana.blit(configuracion,(450,450))
 
-while ejecutar:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            ejecutar = False
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            mouse_pos = pygame.mouse.get_pos()
-            if boton_inicio_rect.collidepoint(mouse_pos):
-                juego_nivel1()
-            if boton_config_rect.collidepoint(mouse_pos):
-                print("Botón CONFIGURACIÓN presionado")
+        pygame.display.flip()
+        reloj.tick(60)  
 
- 
-    x1 -= velocidad
-    x2 -= velocidad
-    if x1 <= -ancho:
-        x1 = x2 + ancho
-    if x2 <= -ancho:
-        x2 = x1 + ancho
-
-    ventana.blit(fondo_menu, (x1, 0))
-    ventana.blit(fondo_menu, (x2, 0))
-    ventana.blit(boton_inicio_img, (boton_inicio_rect.x, boton_inicio_rect.y))
-    ventana.blit(boton_config_img, (boton_config_rect.x, boton_config_rect.y))
-
-    pygame.display.flip()
-    reloj.tick(60)
-
-pygame.quit()
-sys.exit()
+    pygame.quit()
+    sys.exit()
+    
+mainlevel()

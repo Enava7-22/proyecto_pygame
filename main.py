@@ -1,87 +1,96 @@
 import pygame
 import sys
+import subprocess
 
-# Inicializar Pygame
 pygame.init()
 
-# Configuración de la pantalla
-ANCHO, LARGO = 1100, 800
-pantalla = pygame.display.set_mode((ANCHO, LARGO))
-pygame.display.set_caption('no se: Abrasos no balasos')
+def menulevels():
+    ancho = 1200
+    alto = 700
+    ventana = pygame.display.set_mode((ancho,alto))
+    pygame.display.set_caption("ml")
 
-#colores
-VERDE = (34, 139, 34)
-AZUL = (220, 112, 255)
+    botones_ancho , botones_alto = 300,100
 
-# Configuración del jugador
-jugador_pos = [ANCHO // 15, LARGO // 2]
-jugador_radio = 30
-velocidad = 2
+    fondo = pygame.image.load("menulevels.jpg")
+    fondo = pygame.transform.scale(fondo,(ancho,alto))
 
-# Bucle principal del juego
+    boton_level1 =pygame.image.load("boton level1.png")
+    boton_level1 =pygame.transform.scale(boton_level1,(botones_ancho,botones_alto))
 
-# configurar enemigos
-enemigos = []
-enemigos_radio = 20
-enemigos_color = (255, 0, 0)
-enemigo_velocidad = 3
+    botonl1 = pygame.Rect(450,100,botones_ancho,botones_alto)
 
-# crear enemigos en posiciones aleatorias
-import random
-for _ in range(5):
-    x = random.randint(ANCHO // 2, ANCHO - enemigos_radio)
-    y = random.randint(-800, -50)
-    enemigos.append([x, y])
+    clock = pygame.time.Clock()
 
-
-
-
-while True:
-    for evento in pygame.event.get():
-        if evento.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
-#  mover jugador           
-    teclas = pygame.key.get_pressed()
-    if teclas[pygame.K_LEFT]:
-        jugador_pos[0] -= velocidad
-    if teclas[pygame.K_RIGHT]:
-        jugador_pos[0] += velocidad
-    if teclas[pygame.K_UP]:
-        jugador_pos[1] -= velocidad
-    if teclas[pygame.K_DOWN]:
-        jugador_pos[1] += velocidad
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                if botonl1.collidepoint(event.pos):
+                    pygame.quit()
+                    subprocess.run(["python","l1.py"])
+                    sys.exit()
         
-    # wasd
-    if teclas[pygame.K_a]:
-        jugador_pos[0] -= velocidad
-    if teclas[pygame.K_d]:
-        jugador_pos[0] += velocidad 
-    if teclas[pygame.K_w]:
-        jugador_pos[1] -= velocidad
-    if teclas[pygame.K_s]:
-        jugador_pos[1] += velocidad   
+        ventana.fill((0,0,0))
+        ventana.blit(fondo,(0,0))
+        ventana.blit(boton_level1,(botonl1.x,botonl1.y))
+        pygame.display.flip()
+        clock.tick(60)
         
-        
-    # limites de pantalla
-    jugador_pos[0] = max(jugador_radio, min(ANCHO - jugador_radio, jugador_pos[0]))
-    jugador_pos[1] = max(jugador_radio, min(LARGO - jugador_radio, jugador_pos[1]))
+    pygame.quit()
+    sys.exit()
+
+def mainlevel():
+    ancho = 1200
+    alto = 700
+    ancho_botones=300
+    alto_botones=100
+
+    ventana = pygame.display.set_mode((ancho, alto))
+    pygame.display.set_caption("integrador equpo 6")
+
+    fondo = pygame.image.load("img.jpg")
+    fondo = pygame.transform.scale(fondo, (ancho, alto))
+    botones= pygame.image.load("boton inicio.png")
+    botones= pygame.transform.scale(botones,(ancho_botones,alto_botones))
+    configuracion =pygame.image.load("boton configuracion.png")
+    configuracion = pygame.transform.scale(configuracion,(ancho_botones,alto_botones))
+
+    boton_inicio_rect = pygame.Rect(450,300,ancho_botones,alto_botones)
+
+    x1 = 0
+    x2 = ancho
+    velocidad = 2 
+    reloj = pygame.time.Clock()
+    ejecutar = True
+
+    while ejecutar:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                ejecutar = False
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:  
+                if boton_inicio_rect.collidepoint(event.pos):  
+                    menulevels()   
+
+        x1 -= velocidad
+        x2 -= velocidad
+
+        if x1 <= -ancho:
+            x1 = x2 + ancho
+        if x2 <= -ancho:
+            x2 = x1 + ancho
+
+        ventana.blit(fondo, (x1, 0))
+        ventana.blit(fondo, (x2, 0))
+        ventana.blit(botones,(450,300))
+        ventana.blit(configuracion,(450,450))
+
+        pygame.display.flip()
+        reloj.tick(60)  
+
+    pygame.quit()
+    sys.exit()
     
-    # mover y dibujar enemigos
-    for enemigo in enemigos:
-        enemigo[1] += enemigo_velocidad
-        # si el enemigo sale de la pantalla, reubicarlo arriba
-        if enemigo[1] > LARGO + enemigos_radio:
-            enemigo[0] = random.randint(enemigos_radio, ANCHO - enemigos_radio)
-            enemigo[1] = random.randint(-800, -50)
-        pygame.draw.circle
-        
-    # dibujar fondo y jugador
-    pantalla.fill(VERDE)
-    pygame.draw.circle(pantalla, AZUL, jugador_pos, jugador_radio)
-    pygame.display.flip()
-    
-    
-    
-    
-    
+mainlevel()

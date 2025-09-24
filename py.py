@@ -45,12 +45,12 @@ class SceneManager:
 class Menu(Scene):
     def __init__(self, manager):
         super().__init__(manager)
-        self.fondo_menu = pygame.transform.scale(pygame.image.load("img.jpg"), (ancho, alto))
+        self.fondo_menu = pygame.transform.scale(pygame.image.load("proyecyo py/img.jpg"), (ancho, alto))
         self.ancho_botones = 300
         self.alto_botones = 100
 
-        self.boton_inicio_img = pygame.transform.scale(pygame.image.load("boton inicio.png"), (self.ancho_botones, self.alto_botones))
-        self.boton_config_img = pygame.transform.scale(pygame.image.load("boton configuracion.png"), (self.ancho_botones, self.alto_botones))
+        self.boton_inicio_img = pygame.transform.scale(pygame.image.load("proyecyo py/boton inicio.png"), (self.ancho_botones, self.alto_botones))
+        self.boton_config_img = pygame.transform.scale(pygame.image.load("proyecyo py/boton configuracion.png"), (self.ancho_botones, self.alto_botones))
 
         self.boton_inicio_rect = pygame.Rect(450, 300, self.ancho_botones, self.alto_botones)
         self.boton_config_rect = pygame.Rect(450, 450, self.ancho_botones, self.alto_botones)
@@ -65,6 +65,8 @@ class Menu(Scene):
                     self.manager.go_to("nivel1")
                 elif self.boton_config_rect.collidepoint(event.pos):
                     print("Botón CONFIGURACIÓN presionado")
+                    
+                    
 
     def update(self, dt):
         pass
@@ -80,10 +82,10 @@ class Menu(Scene):
 class Nivel1(Scene):
     def __init__(self, manager):
         super().__init__(manager)
-        self.fondo = pygame.transform.scale(pygame.image.load("Gemini_Generated_Image_rglu37rglu37rglu.png"), (ancho, alto))
+        self.fondo = pygame.transform.scale(pygame.image.load("proyecyo py/Gemini_Generated_Image_rglu37rglu37rglu.png"), (ancho, alto))
         self.jugador = pygame.Rect(560, alto // 2, 40, 70)
         self.velocidad = 5
-        self.img_jugador = pygame.transform.scale(pygame.image.load("personaje.png"), (40, 70))
+        self.img_jugador = pygame.transform.scale(pygame.image.load("proyecyo py/personaje.png"), (40, 70))
         self.puerta = pygame.Rect(1100, 300, 60, 100)  # puerta para pasar a nivel 2
 
     def handle_events(self, events):
@@ -118,10 +120,10 @@ class Nivel1(Scene):
 class Nivel2(Scene):
     def __init__(self, manager):
         super().__init__(manager)
-        self.fondo = pygame.transform.scale(pygame.image.load("fondolevel1.png"), (ancho, alto))
+        self.fondo = pygame.transform.scale(pygame.image.load("proyecyo py/fondolevel1.png"), (ancho, alto))
         self.jugador = pygame.Rect(50, alto // 2, 40, 70)
         self.velocidad = 5
-        self.img_jugador = pygame.transform.scale(pygame.image.load("personaje.png"), (40, 70))
+        self.img_jugador = pygame.transform.scale(pygame.image.load("proyecyo py/personaje.png"), (40, 70))
 
     def handle_events(self, events):
         for event in events:

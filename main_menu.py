@@ -1,57 +1,69 @@
 import pygame
 import sys
+from personajes import elegir_personaje
+import all_lgame  # importa al inicio
 
-pygame.init()
-ancho = 1200
-alto = 700
+def mainmenu():
+    pygame.init()  
+    ancho, alto = 1200, 700
+    ancho_botones, alto_botones = 300, 100
 
-ancho_botones=300
-alto_botones=100
+    ventana = pygame.display.set_mode((ancho, alto))
+    pygame.display.set_caption("Integrador equipo 6")
 
-ventana = pygame.display.set_mode((ancho, alto))
-pygame.display.set_caption("integrador equpo 6")
+    # Cargar imágenes
+    fondo = pygame.image.load("imgs/img.jpg")
+    fondo = pygame.transform.scale(fondo, (ancho, alto))
+    boton_inicio = pygame.image.load("imgs/boton inicio.png")
+    boton_inicio = pygame.transform.scale(boton_inicio, (ancho_botones, alto_botones))
+    boton_config = pygame.image.load("imgs/boton configuracion.png")
+    boton_config = pygame.transform.scale(boton_config, (ancho_botones, alto_botones))
 
-
-fondo = pygame.image.load("menupic/img.jpg")
-fondo = pygame.transform.scale(fondo, (ancho, alto))
-botones= pygame.image.load("menupic/boton inicio.png")
-botones= pygame.transform.scale(botones,(ancho_botones,alto_botones))
-configuracion =pygame.image.load("menupic/boton configuracion.png")
-configuracion = pygame.transform.scale(configuracion,(ancho_botones,alto_botones))
-
-
-
-x1 = 0
-x2 = ancho
-velocidad = 2 
-
-reloj = pygame.time.Clock()
-ejecutar = True
-
-while ejecutar:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            ejecutar = False
-
-  
-    x1 -= velocidad
-    x2 -= velocidad
+    # Rects para detectar clics y hover
+    boton_inicio_rect = pygame.Rect(450, 300, ancho_botones, alto_botones)
+    boton_config_rect = pygame.Rect(450, 450, ancho_botones, alto_botones)
 
 
-    if x1 <= -ancho:
-        x1 = x2 + ancho
-    if x2 <= -ancho:
-        x2 = x1 + ancho
+    reloj = pygame.time.Clock()
+    ejecutar = True
 
-  
-    ventana.blit(fondo, (x1, 0))
-    ventana.blit(fondo, (x2, 0))
-    ventana.blit(botones,(450,300))
-    ventana.blit(configuracion,(450,450))
+    while ejecutar:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                ejecutar = False
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:  # clic izquierdo
+                mouse_pos = event.pos
+                if boton_inicio_rect.collidepoint(mouse_pos):
+                    # Abrir pantalla de selección de personaje
+                    personaje_elegido = elegir_personaje()
+                    all_lgame.personaje_elegido = personaje_elegido
+                    all_lgame.menulevels()  # Inicia niveles
+                elif boton_config_rect.collidepoint(mouse_pos):
+                    print("Botón CONFIGURACIÓN presionado - menú de config")
 
-    pygame.display.flip()
-    reloj.tick(60)  
+        ventana.blit(fondo, (0, 0))
 
-pygame.quit()
-sys.exit()
 
+        # Hover simple (escala si mouse encima)
+        mouse_pos = pygame.mouse.get_pos()
+        if boton_inicio_rect.collidepoint(mouse_pos):
+            hover_inicio = pygame.transform.scale(boton_inicio, (ancho_botones + 10, alto_botones + 5))
+            ventana.blit(hover_inicio, (445, 295))
+        else:
+            ventana.blit(boton_inicio, (450, 300))
+        
+        if boton_config_rect.collidepoint(mouse_pos):
+            hover_config = pygame.transform.scale(boton_config, (ancho_botones + 10, alto_botones + 5))
+            ventana.blit(hover_config, (445, 445))
+        else:
+            ventana.blit(boton_config, (450, 450))
+
+        pygame.display.flip()
+        reloj.tick(60)
+
+    pygame.quit()
+    sys.exit()
+
+# Para testing
+if __name__ == "__main__":
+    mainmenu()

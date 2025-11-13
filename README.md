@@ -7,7 +7,20 @@
 ## introduccion
 
 este videojuego es una demo vasada en la ODS 16 con la tematica de paz, justicia e instituciones solidas.
+Nuestra intencion con este videojuego es hacer concientizacion sobre lo importante que es que
+los jóvenes son actores fundamentales para lograr este objetivo, y hay varias razones de peso:
 
+## El Objetivo de Desarrollo Sostenible 16 (ODS 16) se centra en:
+
+- Promover sociedades pacíficas e inclusivas.
+
+- Garantizar la justicia para todos.
+
+- Fortalecer instituciones eficaces, responsables e inclusivas en todos los niveles
+
+## Narrativa
+el juego comienza con el personaje en un pueblo y en cual esta emocionado or un festival que va a realizar el problema es que los mismos pueblerinos ya no quieren realizar mas el festival devido a que ellos mismos no ayudan a hacer el festival y los de verdad esten interezados pierden la emocion al ver que tendrian que hacer todo y al final terminan dejandolo de lado.
+El objetivo es que el personaje deba reavivar el interes del los pueblerinos para reacer el festival ya que es una tradicion para su pueblo.
 
 #### caracteristicas del juego
 

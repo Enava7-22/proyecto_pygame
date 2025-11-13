@@ -43,8 +43,7 @@ El objetivo es que el personaje deba reavivar el interes del los pueblerinos par
 - bandlab
 
 
-
-## avanses de los niveles
+## contenido de los niveles
 
  Menus
 
@@ -67,6 +66,7 @@ bocetos inicial del menu
 
 ## Level 2
 ![IMG-20251113-WA0018](https://github.com/user-attachments/assets/e84c63e6-bb4a-4836-9c70-ee10705da0e9)
+![IMG-20251113-WA0006](https://github.com/user-attachments/assets/4c8114f3-d2b4-484c-a4a6-a6122c6ee1e5)
 
 
 ### Contenido
@@ -92,11 +92,13 @@ bocetos inicial del menu
 ![IMG-20251113-WA0013](https://github.com/user-attachments/assets/02945e29-4022-48ed-b1cd-64f2c45e30d5)
 ![IMG-20251113-WA0012](https://github.com/user-attachments/assets/36746bb3-b3ee-402d-953a-2e3e65ae247c)
 ![IMG-20251113-WA0014](https://github.com/user-attachments/assets/5f2df7b1-88b4-4ea0-8151-15b066c18914)
+<img width="608" height="1696" alt="20 sin título_20251113114115" src="https://github.com/user-attachments/assets/94efc2c8-a499-4706-908d-467ff50c49c5" />
 
 
 ## Escenarios 
 ![IMG-20251113-WA0011](https://github.com/user-attachments/assets/789ded02-3df8-4330-80ba-bda8a2b788f9)
-![IMG-20251113-WA0006](https://github.com/user-attachments/assets/4c8114f3-d2b4-484c-a4a6-a6122c6ee1e5)
+
+<img width="672" height="555" alt="21 sin título_20251113120206" src="https://github.com/user-attachments/assets/b7d517e7-bd7a-40cc-bceb-ee7add0d2104" />
 
 
 ## materiales en el cual se pueden interactuar para el desplasamiento del juego
@@ -116,6 +118,16 @@ bocetos inicial del menu
 ### escenas
 <img width="2723" height="890" alt="level 1 intro" src="https://github.com/user-attachments/assets/a8228afe-fc0e-42a1-af40-b0b096c5942d" />
 
+
+## Installation
+
+Install 
+
+```bash
+  npm install my-project
+  cd my-project
+```
+    
 
 
 

@@ -157,7 +157,7 @@ class Jugador:
         
         
         
-        pygame.draw.rect(superficie, (0, 255, 0), self.rect, 2)
+      
 
 def mainmenu():
     ancho = 1200
@@ -448,8 +448,8 @@ def l1():
             menulevels()
         
         ventana.blit(fondo, (0, 0))
-        texto = fuente.render(f"sillas: {contador_sillas}", True, blanco)
-        ventana.blit(texto, (20, 100))
+        #texto = fuente.render(f"sillas: {contador_sillas}", True, blanco)
+        #ventana.blit(texto, (20, 100))
         #for p in pared:
             #pygame.draw.rect(ventana, red, p)
         #pygame.draw.rect(ventana, red, puerta1)  
@@ -540,29 +540,27 @@ def videojuego():
     ventana = pygame.display.set_mode((ancho, alto))
     pygame.display.set_caption("minilevel 2")
     
-    fondo = pygame.image.load("imgs/fondo def videojuego.png")
-    fondo = pygame.transform.scale(fondo,(ancho,alto))
+    global personaje_elegido
+    jugador = Jugador(486.86, 400, 100, 120, con_gravedad=False, personaje=personaje_elegido, ancho_max=ancho)
 
-    img_jugador = pygame.image.load("imgs/player.png")
-    img_jugador = pygame.transform.scale(img_jugador, (60, 80))
-    jugador = img_jugador.get_rect(center=(600, 600))
+    fondo = pygame.image.load("imgs/fondo def videojuego.png")
+    fondo = pygame.transform.scale(fondo, (ancho, alto))
 
     misil_img = pygame.image.load("imgs/misil.png")
     misil_img = pygame.transform.scale(misil_img, (30, 70))
 
-    velocidad = 15
     velocidad_y = 0
     gravedad = 1
-    fuerza_salto = -15
+    fuerza_salto = -18
+    piso = 680
     en_suelo = True
-    suelo_y = 690
 
     objetos = []
-
     daño = 0
     fuente = pygame.font.SysFont(None, 40)
 
     tiempo_inicio = pygame.time.get_ticks()
+    pared = 0
 
     clock = pygame.time.Clock()
 
@@ -575,24 +573,18 @@ def videojuego():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE and en_suelo:
                     velocidad_y = fuerza_salto
-                    en_suelo = False 
-
-        velocidad_y += gravedad
-        jugador.y += velocidad_y
-        if jugador.y >= suelo_y - jugador.height:
-            jugador.y = suelo_y - jugador.height
-            velocidad_y = 0
-            en_suelo = True   
+                    en_suelo = False
 
         teclas = pygame.key.get_pressed()
-        if teclas[pygame.K_LEFT] and jugador.left > 0:
-            jugador.x -= velocidad   
-        if teclas[pygame.K_RIGHT] and jugador.right < ancho:
-            jugador.x += velocidad 
-        if teclas[pygame.K_UP] and jugador.top > 0:
-            jugador.y -= velocidad
-        if teclas[pygame.K_DOWN] and jugador.bottom < alto:
-            jugador.y += velocidad
+        jugador.actualizar(teclas, paredes=pared)
+
+        jugador.rect.y += velocidad_y
+        velocidad_y += gravedad
+
+        if jugador.rect.y >= piso:
+            jugador.rect.y = piso
+            velocidad_y = 0
+            en_suelo = True
 
         if random.randint(0, 20) == 0:
             x = random.randint(0, ancho - 30)
@@ -606,8 +598,8 @@ def videojuego():
             dialogo_final()
             return
 
-        ventana.blit(fondo,(0,0))
-        ventana.blit(img_jugador, jugador)
+        ventana.blit(fondo, (0, 0))
+        jugador.dibujar(ventana)
 
         texto_daño = fuente.render(f"Daño: {daño}%", True, (255, 255, 255))
         ventana.blit(texto_daño, (20, 20))
@@ -619,10 +611,9 @@ def videojuego():
             obj.y += 5
             ventana.blit(misil_img, obj)
 
-            if jugador.colliderect(obj):
+            if jugador.rect.colliderect(obj):
                 objetos.remove(obj)
                 daño += 20
-
                 if daño > 100:
                     daño = 100
                     reinicio()
@@ -633,13 +624,104 @@ def videojuego():
 
         pygame.display.flip()
         clock.tick(60)
-        
 
 
 
 
         
+def dialogo1_l3():
+    ancho = 1200
+    alto = 700
+    ventana =pygame.display.set_mode((ancho,alto))
+    
+    fondo = pygame.image.load("imgs/d1l3.png")
+    fondo = pygame.transform.scale(fondo,(ancho,alto))
+    
+    clock = pygame.time.Clock()
+    
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    dialogo2_l3()
         
+        ventana.blit(fondo,(0,0))
+        clock.tick(60)
+        pygame.display.update()
+        
+def dialogo2_l3():
+    ancho = 1200
+    alto = 700
+    ventana =pygame.display.set_mode((ancho,alto))
+    
+    fondo = pygame.image.load("imgs/d2l3.png")
+    fondo = pygame.transform.scale(fondo,(ancho,alto))
+    
+    clock = pygame.time.Clock()
+    
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    level3()
+        
+        ventana.blit(fondo,(0,0))
+        clock.tick(60)
+        pygame.display.update()
+
+def dialogo3_l3():
+    ancho = 1200
+    alto = 700
+    ventana =pygame.display.set_mode((ancho,alto))
+    
+    fondo = pygame.image.load("imgs/d3l3.png")
+    fondo = pygame.transform.scale(fondo,(ancho,alto))
+    
+    clock = pygame.time.Clock()
+    
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    dialogo4_l3()
+        
+        ventana.blit(fondo,(0,0))
+        clock.tick(60)
+        pygame.display.update()
+        
+def dialogo4_l3():
+    ancho = 1200
+    alto = 700
+    ventana =pygame.display.set_mode((ancho,alto))
+    
+    fondo = pygame.image.load("imgs/d4l3.png")
+    fondo = pygame.transform.scale(fondo,(ancho,alto))
+    
+    clock = pygame.time.Clock()
+    
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    level3()
+        
+        ventana.blit(fondo,(0,0))
+        clock.tick(60)
+        pygame.display.update()
+
+
         
 def level3():
 
@@ -647,7 +729,7 @@ def level3():
     ventana = pygame.display.set_mode((ancho, alto))
     pygame.display.set_caption("minilevel 2")
 
-    # Jugador con animaciones y gravedad
+ 
     global personaje_elegido
     jugador = Jugador(486.86,400, 100, 120, con_gravedad=False, personaje=personaje_elegido, ancho_max=ancho)
     velo =30
@@ -673,6 +755,9 @@ def level3():
         pygame.Rect(657.87,671.35,528.80,19.26),
         pygame.Rect(1174.92,10.54,11.85,659.91),
         
+        
+        pygame.Rect(685.00,19.67,57.00,113.67),
+    
    
         
         
@@ -680,6 +765,10 @@ def level3():
     
     
     abrir_dialogo = pygame.Rect(369.21,485.34,60.07,76.09)
+    
+    foto = pygame.Rect(561.52,67.63,61.43,57.70)
+    
+    red = (255,0,0)
     
     puerta = pygame.Rect(457.62,678.24,143.73,17.29)
     while True:
@@ -697,8 +786,16 @@ def level3():
             l1()
             return
         
+        if jugador.rect.colliderect(abrir_dialogo):
+            dialogo1_l3()
+            return
+        if jugador.rect.colliderect(foto):
+            dialogo3_l3()
+            return
+        
         teclas = pygame.key.get_pressed()
         jugador.actualizar(teclas,paredes=pared)
+        
 
        
 
@@ -706,159 +803,45 @@ def level3():
 
         ventana.fill((0, 0, 0))
         ventana.blit(fondo, (0, 0))
+        for p in pared:
+            pygame.draw.rect(ventana,red,p)
         jugador.dibujar(ventana)
         pygame.display.flip()
         clock.tick(60)
 
 def level4():
-    pygame.mixer.music.stop()
-    ANCHO, ALTO = 1200, 700
-    ventana = pygame.display.set_mode((ANCHO, ALTO))
-    pygame.display.set_caption("level 4")
-
-    fondo = pygame.image.load("imgs/l3img.png")
-    fondo = pygame.transform.scale(fondo, (ANCHO, ALTO))
-    NEGRO = (0, 0, 0)
-
-    # Jugador con animaciones y gravedad
+    
+    ancho = 1200
+    alto = 700
+    ventana = pygame.display.set_mode((ancho, alto))
     global personaje_elegido
-    jugador = Jugador(100, 600, 80, 80, con_gravedad=True, personaje=personaje_elegido, ancho_max=ANCHO)
-    jugador.velocidad_x = 8
-    jugador.fuerza_salto = -20
-    jugador.suelo_y = ALTO - 50  # Suelo base
-
-    global contador_sillas
-
-    # Imágenes para objetos/enemigos
-    objetos_esquivar_img = pygame.image.load("imgs/caja.png")
-    objetos_esquivar_img = pygame.transform.scale(objetos_esquivar_img, (50, 50))  # Imagen más grande
-
-    objetos_recoger_img = pygame.image.load("imgs/silla.png")
-    objetos_recoger_img = pygame.transform.scale(objetos_recoger_img, (50, 50))  # Imagen más grande
-
-    enemigos_img = pygame.image.load("imgs/fantasma.png")
-    enemigos_img = pygame.transform.scale(enemigos_img, (40, 40))  # Fantasma más pequeño
-
-    plataformas = [
-        pygame.Rect(0, 650, ANCHO, 50),
-        pygame.Rect(300, 500, 200, 20),
-        pygame.Rect(700, 400, 200, 20),
-    ]
-
-    # Fantasmas
-    enemigos = [pygame.Rect(random.randint(0, ANCHO-30), random.randint(0, 600), 30, 30) for _ in range(6)]
-    velocidad_enemigo = 3
-
-    objetos_recoger = []
-    objetos_esquivar = []
-    TIEMPO_OBJETO = pygame.USEREVENT + 1
-    pygame.time.set_timer(TIEMPO_OBJETO, 1500)
-
-    puntaje = 0
-    contador_daño = 0
-    ultimo_daño = 0
-    fuente = pygame.font.SysFont(None, 36)
-
-    reloj = pygame.time.Clock()
-
+    jugador = Jugador(486.86,400, 100, 120, con_gravedad=False, personaje=personaje_elegido, ancho_max=ancho)
+    
+    fondo = pygame.image.load("imgs/level 3 nueva.png")
+    fondo = pygame.transform.scale(fondo, (ancho, alto))
+    pared = 0
+    
+    clock = pygame.time.Clock()
+    
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    return
-            if event.type == TIEMPO_OBJETO:
-                # Crear cajas
-                for _ in range(random.randint(2, 3)):
-                    x = random.randint(0, ANCHO-50)
-                    hitbox_esquivar = pygame.Rect(x + 10, 0 + 10, 30, 30)  # Hitbox más pequeña y centrada
-                    objetos_esquivar.append(hitbox_esquivar)
-                # Crear sillas
-                for _ in range(random.randint(1, 2)):
-                    x = random.randint(0, ANCHO-50)
-                    hitbox_recoger = pygame.Rect(x + 10, 0 + 10, 30, 30)
-                    objetos_recoger.append(hitbox_recoger)
-
+                
         teclas = pygame.key.get_pressed()
-        jugador.actualizar(teclas, paredes=plataformas)
-
-        # Límites de pantalla
-        jugador.rect.left = max(jugador.rect.left, 0)
-        jugador.rect.right = min(jugador.rect.right, ANCHO)
-        jugador.rect.top = max(jugador.rect.top, 0)
-        jugador.rect.bottom = min(jugador.rect.bottom, ALTO)
-
-        # Actualizar enemigos
-        for e in enemigos:
-            if e.x < jugador.rect.x:
-                e.x += velocidad_enemigo
-            elif e.x > jugador.rect.x:
-                e.x -= velocidad_enemigo
-            if e.y < jugador.rect.y:
-                e.y += velocidad_enemigo
-            elif e.y > jugador.rect.y:
-                e.y -= velocidad_enemigo
-            # Limites de pantalla
-            e.left = max(e.left, 0)
-            e.right = min(e.right, ANCHO)
-            e.top = max(e.top, 0)
-            e.bottom = min(e.bottom, ALTO)
-
-        tiempo_actual_ms = pygame.time.get_ticks()
-        for e in enemigos:
-            if jugador.rect.colliderect(e):
-                if tiempo_actual_ms - ultimo_daño > 1000:
-                    contador_daño += 1
-                    ultimo_daño = tiempo_actual_ms
-
-        # Actualizar objetos recoger
-        for obj in objetos_recoger[:]:
-            obj.y += 5
-            if jugador.rect.colliderect(obj):
-                puntaje += 1
-                objetos_recoger.remove(obj)
-            elif obj.y > ALTO:
-                objetos_recoger.remove(obj)
-
-        # Actualizar objetos esquivar
-        for obj in objetos_esquivar[:]:
-            obj.y += 5
-            if jugador.rect.colliderect(obj):
-                puntaje -= 1
-                objetos_esquivar.remove(obj)
-            elif obj.y > ALTO:
-                objetos_esquivar.remove(obj)
-
-        if puntaje >= 5:
-            contador_sillas += 5
-            regresar_al_hub()
-            return
-
-        if contador_daño >= 20:
-            regresar_al_hub()
-            return
-
-        ventana.fill((0, 0, 0))
+        jugador.actualizar(teclas,paredes=pared)
+        
+        
+       
+        
+        
         ventana.blit(fondo, (0, 0))
         jugador.dibujar(ventana)
-        for e in enemigos:
-            ventana.blit(enemigos_img, (e.x, e.y))
-        for plat in plataformas:
-            pygame.draw.rect(ventana, NEGRO, plat)
-        for e in objetos_esquivar:
-            ventana.blit(objetos_esquivar_img, (e.x - 10, e.y - 10))  # Ajuste hitbox a imagen
-        for e in objetos_recoger:
-            ventana.blit(objetos_recoger_img, (e.x - 10, e.y - 10))
-
-        texto = fuente.render(f"Puntaje: {puntaje}", True, NEGRO)
-        ventana.blit(texto, (10, 10))
-        texto_daño = fuente.render(f"Daño: {contador_daño}", True, (255, 0, 0))
-        ventana.blit(texto_daño, (10, 50))
-
         pygame.display.update()
-        reloj.tick(60)
+        clock.tick(60)
+
+
 
 
 def level5():

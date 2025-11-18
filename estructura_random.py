@@ -1,11 +1,15 @@
+import random
+import pygame
+import sys
+
+pygame.init()
+
 def videojuego():
+    
     ancho = 1200
     alto = 700
     ventana = pygame.display.set_mode((ancho, alto))
     pygame.display.set_caption("minilevel 2")
-    
-    fondo = pygame.image.load("imgs/fondo def videojuego.png")
-    fondo = pygame.transform.scale(fondo,(ancho,alto))
 
     img_jugador = pygame.image.load("imgs/player.png")
     img_jugador = pygame.transform.scale(img_jugador, (60, 80))
@@ -15,6 +19,7 @@ def videojuego():
     misil_img = pygame.transform.scale(misil_img, (30, 70))
 
     velocidad = 15
+
     velocidad_y = 0
     gravedad = 1
     fuerza_salto = -15
@@ -23,10 +28,13 @@ def videojuego():
 
     objetos = []
 
+    # ----- CONTADOR DE DAÑO -----
     daño = 0
     fuente = pygame.font.SysFont(None, 40)
 
-    tiempo_inicio = pygame.time.get_ticks()
+    # ----- CONTADOR DE TIEMPO -----
+    tiempo_inicio = pygame.time.get_ticks()  # milisegundos
+    # --------------------------------
 
     clock = pygame.time.Clock()
 
@@ -53,6 +61,7 @@ def videojuego():
             jugador.x -= velocidad   
         if teclas[pygame.K_RIGHT] and jugador.right < ancho:
             jugador.x += velocidad 
+
         if teclas[pygame.K_UP] and jugador.top > 0:
             jugador.y -= velocidad
         if teclas[pygame.K_DOWN] and jugador.bottom < alto:
@@ -62,22 +71,21 @@ def videojuego():
             x = random.randint(0, ancho - 30)
             rect = misil_img.get_rect(topleft=(x, 0))
             objetos.append(rect)
-
-        tiempo_actual = pygame.time.get_ticks()
-        segundos = (tiempo_actual - tiempo_inicio) // 1000
-
-        if segundos >= 30:
-            dialogo_final()
-            return
-
-        ventana.blit(fondo,(0,0))
+            
+        ventana.fill((0, 0, 0))
         ventana.blit(img_jugador, jugador)
 
+        # ----- MOSTRAR DAÑO -----
         texto_daño = fuente.render(f"Daño: {daño}%", True, (255, 255, 255))
         ventana.blit(texto_daño, (20, 20))
 
+        # ----- CALCULAR SEGUNDOS -----
+        tiempo_actual = pygame.time.get_ticks()
+        segundos = (tiempo_actual - tiempo_inicio) // 1000
+
         texto_tiempo = fuente.render(f"Tiempo: {segundos}s", True, (255, 255, 255))
         ventana.blit(texto_tiempo, (20, 60))
+        # --------------------------------
 
         for obj in objetos[:]:
             obj.y += 5
@@ -86,15 +94,13 @@ def videojuego():
             if jugador.colliderect(obj):
                 objetos.remove(obj)
                 daño += 20
-
                 if daño > 100:
                     daño = 100
-                    reinicio()
-                    return
 
             if obj.top > alto:
                 objetos.remove(obj)
 
         pygame.display.flip()
         clock.tick(60)
-        
+
+videojuego()

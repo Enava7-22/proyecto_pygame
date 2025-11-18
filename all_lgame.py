@@ -13,10 +13,8 @@ personaje_elegido = None  # Pantalla de selección animada
 
 # Clase Jugador con animaciones (unifica movimiento, física y dibujo)
 class Jugador:
-    def __init__(self, x, y, width, height, con_gravedad=False, personaje='p1', ancho_max=1200):
-        ancho_hitbox = 20
-        alto_hitbox = 30
-        
+    def __init__(self, x, y, width, height, con_gravedad=False, personaje='p1', ancho_max=1200, ancho_hitbox=20, alto_hitbox=30):
+        # Parámetros opcionales para hitbox (por defecto 20x30)
         self.rect = pygame.Rect(
             x + (width - ancho_hitbox)//2,  # centrado horizontal
             y + height - alto_hitbox,       # pie del jugador
@@ -462,7 +460,7 @@ def level2():
 
     # Jugador con animaciones y gravedad
     global personaje_elegido
-    jugador = Jugador(600.38,480, 100, 120, con_gravedad=False, personaje=personaje_elegido, ancho_max=ancho)
+    jugador = Jugador(600.38, 480, 100, 120, con_gravedad=False, personaje=personaje_elegido, ancho_max=ancho) 
     velo =30
     fondo = pygame.image.load("imgs/nuevo l2.png")
     fondo = pygame.transform.scale(fondo, (ancho, alto))
@@ -511,9 +509,6 @@ def level2():
         teclas = pygame.key.get_pressed()
         jugador.actualizar(teclas,paredes=pared)
 
-       
-
-      
 
         ventana.fill((0, 0, 0))
         ventana.blit(fondo, (0, 0))
@@ -535,7 +530,7 @@ def videojuego():
     pygame.display.set_caption("minilevel 2")
     
     global personaje_elegido
-    jugador = Jugador(486.86, 400, 100, 120, con_gravedad=False, personaje=personaje_elegido, ancho_max=ancho)
+    jugador = Jugador(486.86, 400, 100, 120, con_gravedad=False, personaje=personaje_elegido, ancho_max=ancho,ancho_hitbox=60,alto_hitbox=100)
 
     fondo = pygame.image.load("imgs/fondo def videojuego.png")
     fondo = pygame.transform.scale(fondo, (ancho, alto))
@@ -546,7 +541,7 @@ def videojuego():
     velocidad_y = 0
     gravedad = 1
     fuerza_salto = -18
-    piso = 680
+    piso = 580
     en_suelo = True
 
     objetos = []

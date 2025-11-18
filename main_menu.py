@@ -7,6 +7,7 @@ def mainmenu():
     pygame.init()  
     ancho, alto = 1200, 700
     ancho_botones, alto_botones = 300, 100
+    ancho_logo,alto_logo=500,200
 
     ventana = pygame.display.set_mode((ancho, alto))
     pygame.display.set_caption("Integrador equipo 6")
@@ -14,6 +15,8 @@ def mainmenu():
     # Cargar imágenes
     fondo = pygame.image.load("imgs/menulevels.jpg")
     fondo = pygame.transform.scale(fondo, (ancho, alto))
+    logo = pygame.image.load("imgs/logo_juego.png")
+    logo = pygame.transform.scale(logo, (ancho_logo, alto_logo))
     boton_inicio = pygame.image.load("imgs/boton inicio.png")
     boton_inicio = pygame.transform.scale(boton_inicio, (ancho_botones, alto_botones))
     boton_config = pygame.image.load("imgs/boton configuracion.png")
@@ -45,7 +48,7 @@ def mainmenu():
                     print("Botón CONFIGURACIÓN presionado - menú de config")
 
         ventana.blit(fondo, (0, 0))
-
+        ventana.blit(logo, (350,30))
 
         # Hover simple (escala si mouse encima)
         mouse_pos = pygame.mouse.get_pos()

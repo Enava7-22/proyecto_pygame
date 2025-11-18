@@ -16,17 +16,13 @@ class Jugador:
     def __init__(self, x, y, width, height, con_gravedad=False, personaje='p1', ancho_max=1200):
         ancho_hitbox = 20
         alto_hitbox = 30
-
         
         self.rect = pygame.Rect(
-        x + (width - ancho_hitbox)//2,  # centrado horizontal
-        y + height - alto_hitbox,       # pie del jugador
-        ancho_hitbox,
-        alto_hitbox
-         )
-        
-        
-        
+            x + (width - ancho_hitbox)//2,  # centrado horizontal
+            y + height - alto_hitbox,       # pie del jugador
+            ancho_hitbox,
+            alto_hitbox
+        )
         self.velocidad_x = 10  # Horizontal (ajustable)
         self.velocidad_y = 0
         self.gravedad = 1 if con_gravedad else 0
@@ -34,7 +30,7 @@ class Jugador:
         self.en_suelo = not con_gravedad
         self.suelo_y = 690 if con_gravedad else None  # Por defecto; ajusta por nivel
         self.direccion = 1  # 1: derecha, -1: izquierda
-        self.estado = 'idle'  # 'idle' o 'walking'
+        self.estado = 'idle'  # 'idle', 'walking', 'walking_up', 'walking_down'
         self.con_gravedad = con_gravedad
         self.personaje = personaje
         self.ancho_max = ancho_max  # Para límites horizontales
@@ -42,10 +38,12 @@ class Jugador:
         # Cargar frames para este personaje (de personajes.py)
         frames_p1, frames_p2 = cargar_frames()
         frames_globales = {'p1': frames_p1, 'p2': frames_p2}
-        self.frames = frames_globales[self.personaje]  # ([derecha], [izquierda])
+        self.frames = frames_globales[self.personaje]  # ([derecha], [izquierda], [arriba], [abajo])
         
         self.frames_derecha = [pygame.transform.scale(f, (width, height)) for f in self.frames[0]]
         self.frames_izquierda = [pygame.transform.scale(f, (width, height)) for f in self.frames[1]]
+        self.frames_arriba = [pygame.transform.scale(f, (width, height)) for f in self.frames[2]]  # Nuevo: frames para arriba
+        self.frames_abajo = [pygame.transform.scale(f, (width, height)) for f in self.frames[3]]   # Nuevo: frames para abajo
         
         try:
             self.imagen_actual = self.frames_derecha[0]
@@ -57,7 +55,6 @@ class Jugador:
             self.tiene_frames = False
             print(f"Advertencia: Usando imagen estática para {personaje}. Error: {e}")
         
-    
         self.frame_actual = 0
         self.tiempo_animacion = pygame.time.get_ticks()
         self.velocidad_animacion_walking = 150  
@@ -65,21 +62,30 @@ class Jugador:
     
     def actualizar(self, teclas, paredes=None):
         x_ant, y_ant = self.rect.x, self.rect.y
-        moviendo_horizontal = False
-        moviendo_vertical = False
+        moviendo_horizontal = teclas[pygame.K_LEFT] or teclas[pygame.K_RIGHT]
+        moviendo_vertical = teclas[pygame.K_UP] or teclas[pygame.K_DOWN]
 
-
+        # Establecer estado de animación basado en movimiento
+        if moviendo_horizontal and not moviendo_vertical:
+            self.estado = 'walking'
+        elif moviendo_vertical and not moviendo_horizontal:
+            if teclas[pygame.K_UP]:
+                self.estado = 'walking_up'
+            elif teclas[pygame.K_DOWN]:
+                self.estado = 'walking_down'
+        elif moviendo_horizontal and moviendo_vertical:
+            self.estado = 'walking'  # Prioridad horizontal si se mueve en ambas direcciones
+        else:
+            self.estado = 'idle'
+        
         if teclas[pygame.K_LEFT] and self.rect.left > 0:
             self.rect.x -= self.velocidad_x
             self.direccion = -1
-            moviendo_horizontal = True
         if teclas[pygame.K_RIGHT] and self.rect.right < self.ancho_max:
             self.rect.x += self.velocidad_x
             self.direccion = 1
-            moviendo_horizontal = True
 
         if self.con_gravedad:
-            
             if teclas[pygame.K_SPACE] and self.en_suelo:
                 self.velocidad_y = self.fuerza_salto
                 self.en_suelo = False
@@ -104,60 +110,48 @@ class Jugador:
             # Movimiento vertical libre (solo si no hay gravedad)
             if teclas[pygame.K_UP] and self.rect.top > 0:
                 self.rect.y -= self.velocidad_x
-                moviendo_vertical = True
             if teclas[pygame.K_DOWN] and self.rect.bottom < 700:  # Ajusta alto si es distinto
                 self.rect.y += self.velocidad_x
-                moviendo_vertical = True
                 
             if paredes:
                 if any(self.rect.colliderect(p) for p in paredes):
                     self.rect.x, self.rect.y = x_ant, y_ant
-
-        # Estado de animación
-        if moviendo_horizontal:
-            self.estado = 'walking'
-        else:
-            self.estado = 'idle'
-
     
     def animar(self):
         ahora = pygame.time.get_ticks()
-        vel_anim = self.velocidad_animacion_walking if self.estado == 'walking' else self.velocidad_animacion_idle
+        vel_anim = self.velocidad_animacion_walking if self.estado in ['walking', 'walking_up', 'walking_down'] else self.velocidad_animacion_idle
         
         if ahora - self.tiempo_animacion > vel_anim:
             self.tiempo_animacion = ahora
             if self.tiene_frames:
                 self.frame_actual = (self.frame_actual + 1) % len(self.frames_derecha)
-                
-                if self.estado == 'idle':
-                    idx = 0  # Frame estático para idle
-                else:
-                    idx = self.frame_actual  # Ciclo para walking
-                
-                if self.direccion == -1:
-                    self.imagen_actual = self.frames_izquierda[idx]
-                else:
-                    self.imagen_actual = self.frames_derecha[idx]
+                idx = 0 if self.estado == 'idle' else self.frame_actual
+
+                if self.estado == 'walking':
+                    self.imagen_actual = self.frames_izquierda[idx] if self.direccion == -1 else self.frames_derecha[idx]
+                elif self.estado == 'walking_up':
+                    self.imagen_actual = self.frames_arriba[idx]
+                elif self.estado == 'walking_down':
+                    self.imagen_actual = self.frames_abajo[idx]
+                else:  # idle
+                    self.imagen_actual = self.frames_derecha[0]  # Frame estático
             else:
-                # Fallback: Flip para dirección
-                if self.direccion == -1:
-                    self.imagen_actual = pygame.transform.flip(self.imagen_estatica, True, False)
+                # Fallback: Flip para dirección (solo para horizontal)
+                if self.estado == 'walking':
+                    if self.direccion == -1:
+                        self.imagen_actual = pygame.transform.flip(self.imagen_estatica, True, False)
+                    else:
+                        self.imagen_actual = self.imagen_estatica
                 else:
                     self.imagen_actual = self.imagen_estatica
     
     def dibujar(self, superficie):
         self.animar()
-        
-        
-        
         pos_x = self.rect.x + (self.rect.width - self.imagen_actual.get_width()) // 2
         pos_y = self.rect.bottom - self.imagen_actual.get_height()
         superficie.blit(self.imagen_actual, (pos_x, pos_y))
-        
-        
-        
-        
-      
+        pygame.draw.rect(superficie, (0, 255, 0), self.rect, 2)
+
 
 def mainmenu():
     ancho = 1200

@@ -820,9 +820,26 @@ def level4():
     fondo = pygame.image.load("imgs/level 3 nueva.png")
     fondo = pygame.transform.scale(fondo, (ancho, alto))
     pared = [
-        pygame.Rect(312.67,20.67,140.00,108.00)
+        pygame.Rect(312.67,20.67,140.00,108.00),
+        pygame.Rect(312.67,20.67,140.00,108.00),
+        pygame.Rect(524.00,296.00,142.00,80.00),
+        pygame.Rect(463.33,39.33,222.00,118.67),
+        pygame.Rect(469.33,104.00,64.00,107.33),
+        pygame.Rect(783.00,113.33,49.67,44.67),
+        pygame.Rect(793.67,43.33,26.67,71.00),
+        pygame.Rect(762.00,35.67,94.33,62.67),
+        pygame.Rect(782.67,536.67,49.00,46.00),
+        pygame.Rect(795.33,468.33,25.00,70.33),
+        pygame.Rect(762.33,460.00,94.33,62.33),
+        pygame.Rect(257.33,6.00,674.50,46.17),
+        pygame.Rect(714.50,602.50,218.00,45.00),
+        pygame.Rect(258.00,602.50,193.50,45.50),
+        pygame.Rect(255.00,3.00,51.00,644.00),
+        pygame.Rect(887.00,0.00,47.00,650.00)
     ]
     red = (255,0,0)
+    
+    puerta = pygame.Rect(453.00,629.50,263.50,21.00)
     clock = pygame.time.Clock()
     
     while True:
@@ -834,14 +851,18 @@ def level4():
         teclas = pygame.key.get_pressed()
         jugador.actualizar(teclas,paredes=pared)
         
+        if jugador.rect.colliderect(puerta):
+            l1()
+            return
+        
         
        
         
         
         ventana.blit(fondo, (0, 0))
         jugador.dibujar(ventana)
-        for p in pared:
-            pygame.draw.rect(ventana,red,p)
+        #for p in pared:
+           # pygame.draw.rect(ventana,red,p)
         pygame.display.update()
         clock.tick(60)
 

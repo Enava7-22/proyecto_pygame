@@ -819,8 +819,10 @@ def level4():
     
     fondo = pygame.image.load("imgs/level 3 nueva.png")
     fondo = pygame.transform.scale(fondo, (ancho, alto))
-    pared = 0
-    
+    pared = [
+        pygame.Rect(312.67,20.67,140.00,108.00)
+    ]
+    red = (255,0,0)
     clock = pygame.time.Clock()
     
     while True:
@@ -838,6 +840,8 @@ def level4():
         
         ventana.blit(fondo, (0, 0))
         jugador.dibujar(ventana)
+        for p in pared:
+            pygame.draw.rect(ventana,red,p)
         pygame.display.update()
         clock.tick(60)
 

@@ -243,8 +243,14 @@ def menulevels():
 
     boton_level1 = pygame.image.load("imgs/boton level1.png")
     boton_level1 = pygame.transform.scale(boton_level1, (botones_ancho, botones_alto))
+    boton_level2 = pygame.image.load("imgs/boton_play.png")
+    boton_level2 = pygame.transform.scale(boton_level2, (botones_ancho, botones_alto))
+    boton_level3 = pygame.image.load("imgs/boton_play.png")
+    boton_level3 = pygame.transform.scale(boton_level3, (botones_ancho, botones_alto))
 
     botonl1 = pygame.Rect(450, 100, botones_ancho, botones_alto)
+    botonl2 = pygame.Rect(450, 250, botones_ancho, botones_alto)
+    botonl3 = pygame.Rect(450, 350, botones_ancho, botones_alto)
 
     x1 = 0
     x2 = ancho
@@ -260,8 +266,14 @@ def menulevels():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     mainmenu()  # Regresa al menú principal
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:#level 1
                 if botonl1.collidepoint(event.pos):
+                    dialogo1()
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:#level 2
+                if botonl2.collidepoint(event.pos):
+                    dialogo1()
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:#level 3
+                if botonl3.collidepoint(event.pos):
                     dialogo1()
                     
         x1 -= velocidad
@@ -274,6 +286,8 @@ def menulevels():
         ventana.blit(fondo, (x1, 0))
         ventana.blit(fondo, (x2, 0))
         ventana.blit(boton_level1, (botonl1.x, botonl1.y))
+        ventana.blit(boton_level2, (botonl2.x, botonl2.y))
+        ventana.blit(boton_level3, (botonl3.x, botonl3.y))
         pygame.display.flip()
         clock.tick(60)
 
@@ -718,7 +732,6 @@ def level3():
     ventana = pygame.display.set_mode((ancho, alto))
     pygame.display.set_caption("minilevel 2")
 
- 
     global personaje_elegido
     jugador = Jugador(486.86,400, 100, 120, con_gravedad=False, personaje=personaje_elegido, ancho_max=ancho)
     velo =30
@@ -786,10 +799,6 @@ def level3():
         jugador.actualizar(teclas,paredes=pared)
         
 
-       
-
-      
-
         ventana.fill((0, 0, 0))
         ventana.blit(fondo, (0, 0))
         for p in pared:
@@ -820,9 +829,6 @@ def level4():
                 
         teclas = pygame.key.get_pressed()
         jugador.actualizar(teclas,paredes=pared)
-        
-        
-       
         
         
         ventana.blit(fondo, (0, 0))

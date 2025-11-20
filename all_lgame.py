@@ -58,24 +58,24 @@ class Jugador:
         self.velocidad_animacion_walking = 150  
         self.velocidad_animacion_idle = 500
     
-    def actualizar(self, teclas, paredes=None):
+    def actualizar(self, teclas, paredes=None, limite_superior=0, limite_inferior=float('inf')):
         x_ant, y_ant = self.rect.x, self.rect.y
         moviendo_horizontal = teclas[pygame.K_LEFT] or teclas[pygame.K_RIGHT]
         moviendo_vertical = teclas[pygame.K_UP] or teclas[pygame.K_DOWN]
 
-        # Establecer estado de animación basado en movimiento
+        # --- ACTUALIZAR ESTADO ---
         if moviendo_horizontal and not moviendo_vertical:
             self.estado = 'walking'
         elif moviendo_vertical and not moviendo_horizontal:
-            if teclas[pygame.K_UP]:
-                self.estado = 'walking_up'
-            elif teclas[pygame.K_DOWN]:
-                self.estado = 'walking_down'
+            self.estado = 'walking_up' if teclas[pygame.K_UP] else 'walking_down'
         elif moviendo_horizontal and moviendo_vertical:
-            self.estado = 'walking'  # Prioridad horizontal si se mueve en ambas direcciones
+            self.estado = 'walking'
         else:
             self.estado = 'idle'
-        
+
+        # ============================
+        # 1. MOVIMIENTO HORIZONTAL
+        # ============================
         if teclas[pygame.K_LEFT] and self.rect.left > 0:
             self.rect.x -= self.velocidad_x
             self.direccion = -1
@@ -83,38 +83,72 @@ class Jugador:
             self.rect.x += self.velocidad_x
             self.direccion = 1
 
+        # Colisión horizontal (solo bloquear paredes verticales)
+        if paredes:
+            for p in paredes:
+                if self.rect.colliderect(p):
+                    self.rect.x = x_ant  # revertir solo X
+                    break
+
+        # ============================
+        # 2. MOVIMIENTO VERTICAL (GRAVEDAD)
+        # ============================
         if self.con_gravedad:
+
+            # SALTO
             if teclas[pygame.K_SPACE] and self.en_suelo:
                 self.velocidad_y = self.fuerza_salto
                 self.en_suelo = False
-            
+
+            # APLICAR GRAVEDAD
             self.velocidad_y += self.gravedad
             self.rect.y += self.velocidad_y
 
+            # COLISIÓN CON EL SUELO GLOBAL
             if self.rect.bottom >= self.suelo_y:
                 self.rect.bottom = self.suelo_y
                 self.velocidad_y = 0
                 self.en_suelo = True
 
+            # COLISIONES VERTICALES CORRECTAS
             if paredes:
                 for p in paredes:
-                    if self.rect.colliderect(p) and self.velocidad_y >= 0:
-                        self.rect.bottom = p.top
-                        self.velocidad_y = 0
-                        self.en_suelo = True
-                if any(self.rect.colliderect(p) for p in paredes):
-                    self.rect.x, self.rect.y = x_ant, y_ant
+                    if self.rect.colliderect(p):
+
+                        # CAYENDO → PISO
+                        if self.velocidad_y > 0:
+                            self.rect.bottom = p.top
+                            self.velocidad_y = 0
+                            self.en_suelo = True
+
+                        # SUBIENDO → TECHO
+                        elif self.velocidad_y < 0:
+                            self.rect.top = p.bottom
+                            self.velocidad_y = 0
+
         else:
-            # Movimiento vertical libre (solo si no hay gravedad)
+            # Movimiento sin gravedad
             if teclas[pygame.K_UP] and self.rect.top > 0:
                 self.rect.y -= self.velocidad_x
-            if teclas[pygame.K_DOWN] and self.rect.bottom < 700:  # Ajusta alto si es distinto
+            if teclas[pygame.K_DOWN] and self.rect.bottom < 700:
                 self.rect.y += self.velocidad_x
-                
+
+            # Colisiones sin gravedad
             if paredes:
                 if any(self.rect.colliderect(p) for p in paredes):
                     self.rect.x, self.rect.y = x_ant, y_ant
-    
+
+        # LIMITE DEL MAPA
+        if self.rect.left < 0:
+            self.rect.left = 0
+        if self.rect.right > self.ancho_max:
+            self.rect.right = self.ancho_max
+        if self.rect.top < limite_superior:
+            self.rect.top = limite_superior
+        if self.rect.bottom > limite_inferior:
+            self.rect.bottom = limite_inferior
+
+
     def animar(self):
         ahora = pygame.time.get_ticks()
         vel_anim = self.velocidad_animacion_walking if self.estado in ['walking', 'walking_up', 'walking_down'] else self.velocidad_animacion_idle
@@ -854,7 +888,7 @@ def level4():
         ventana.blit(fondo, (0, 0))
         jugador.dibujar(ventana)
         #for p in pared:
-           # pygame.draw.rect(ventana,red,p)
+        # pygame.draw.rect(ventana,red,p)
         pygame.display.update()
         clock.tick(60)
 
@@ -863,78 +897,77 @@ pygame.init()
 
 def level2_parte1():
     ANCHO_WIN, ALTO_WIN = 1400, 800
-
     ventana = pygame.display.set_mode((ANCHO_WIN, ALTO_WIN))
     fondo = pygame.image.load("imgs/f.png").convert()
 
     ANCHO_MAPA, ALTO_MAPA = fondo.get_width(), fondo.get_height()
 
     jugador = Jugador(
-        400, 100,
-        100, 120,
+        600.38, 480, 100, 120,
         con_gravedad=True,
         personaje=personaje_elegido,
-        ancho_max=ANCHO_MAPA, ancho_hitbox=60, alto_hitbox=100
+        ancho_max=ANCHO_MAPA,
+        ancho_hitbox=50,
+        alto_hitbox=80
     )
     jugador.suelo_y = 622
-    
     jugador.fuerza_salto = -23
 
-    pared = [pygame.Rect(290, 527, 82, 80),
-            pygame.Rect(608,498,14,82),
-            pygame.Rect(596,564,37,40),
-            pygame.Rect(825,561,22,42),
-            pygame.Rect(1200,519,60,89),
-            pygame.Rect(1497,559,44,50),
-            pygame.Rect(1511,514,17,71),
-            pygame.Rect(1552,528,51,80),
-            pygame.Rect(1798,516,65,93),
-            pygame.Rect(1864,526,80,81),
-             ]
+    pared = [
+        pygame.Rect(290, 527, 82, 80),
+        pygame.Rect(608, 498, 14, 82),
+        pygame.Rect(596, 564, 37, 40),
+        pygame.Rect(825, 561, 22, 42),
+        pygame.Rect(1200, 519, 60, 89),
+        pygame.Rect(1497, 559, 44, 50),
+        pygame.Rect(1511, 514, 17, 71),
+        pygame.Rect(1552, 528, 51, 80),
+        pygame.Rect(1798, 516, 65, 93),
+        pygame.Rect(1864, 526, 80, 81),
+    ]
 
     clock = pygame.time.Clock()
     run = True
-    contador_vida = 0 
+    contador_vida = 0
+    colisionando = False  # Flag para evitar contar múltiples veces por colisión continua
 
     while run:
         clock.tick(60)
 
         teclas = pygame.key.get_pressed()
-        jugador.actualizar(teclas, paredes=pared)
-        for p in pared:
-            
-            if jugador.rect.colliderect(p):
-                contador_vida+=1
-                
-        if contador_vida == 3:
+        # Actualizar con paredes y límites del mapa integrados
+        jugador.actualizar(teclas, paredes=pared, limite_inferior=ALTO_MAPA)
+
+        # Chequear colisiones para contador de vida (solo primera vez por colisión)
+        colision_actual = any(jugador.rect.colliderect(p) for p in pared)
+        if colision_actual and not colisionando:
+            contador_vida += 1
+            colisionando = True
+        elif not colision_actual:
+            colisionando = False  # Resetear cuando deja de colisionar
+
+        if contador_vida >= 3:
             l1()
             return
-       
-        
-        jugador.rect.x = max(0, min(jugador.rect.x, ANCHO_MAPA - jugador.rect.width))
-        jugador.rect.y = max(0, min(jugador.rect.y, ALTO_MAPA - jugador.rect.height))
 
+        # Cámara (calculada después de actualizar)
         cam_x = jugador.rect.x - ANCHO_WIN // 2
         cam_y = jugador.rect.y - ALTO_WIN // 2
-
         cam_x = max(0, min(cam_x, ANCHO_MAPA - ANCHO_WIN))
         cam_y = max(0, min(cam_y, ALTO_MAPA - ALTO_WIN))
 
         ventana.blit(fondo, (-cam_x, -cam_y))
 
+        # Dibujar paredes para debug
         for p in pared:
             pygame.draw.rect(ventana, (255, 0, 0), (p.x - cam_x, p.y - cam_y, p.width, p.height))
 
-        temp_x = jugador.rect.x
-        temp_y = jugador.rect.y
-
+        # Dibujar jugador (ajuste temporal para pantalla)
+        temp_x, temp_y = jugador.rect.x, jugador.rect.y
         jugador.rect.x -= cam_x
         jugador.rect.y -= cam_y
-
         jugador.dibujar(ventana)
-
-        jugador.rect.x = temp_x
-        jugador.rect.y = temp_y
+        jugador.rect.x, jugador.rect.y = temp_x, temp_y  # Restaurar posición del mundo
 
         pygame.display.update()
 

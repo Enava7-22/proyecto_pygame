@@ -1,7 +1,7 @@
 import pygame
 import sys
 from personajes import elegir_personaje
-import all_lgame  # importa al inicio
+import all_lgame 
 
 def configuracion():
     # Pantalla de configuración simple

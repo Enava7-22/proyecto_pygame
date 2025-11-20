@@ -14,7 +14,7 @@ def game():
 
     clock = pygame.time.Clock()
     run = True
-
+    
     while run:
         clock.tick(60)
 

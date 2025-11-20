@@ -367,14 +367,14 @@ def l1():
     fondo = pygame.image.load("imgs/pul.png")
     fondo = pygame.transform.scale(fondo, (ancho, alto))
     
-    # Jugador con animaciones (movimiento libre, sin gravedad)
+
     global personaje_elegido
     personaje = Jugador(180,10,80,80, con_gravedad=False, personaje=personaje_elegido)
     personaje.velocidad_x = 6
     
     fuente = pygame.font.SysFont(None, 50)
     blanco = (255, 255, 255) 
-    #coliciones para Abril------------------------------------------------
+    salida = pygame.Rect(192.91,0.09,58.91,4.55)
     pared = [
         pygame.Rect(189.47, 1.10, 2.74, 142.93),
         pygame.Rect(47, 239, 145, 11),
@@ -430,14 +430,13 @@ def l1():
         if personaje.rect.colliderect(puerta3):
             level4()
             return
-        if personaje.rect.colliderect(puerta4):
-            level5()
-            return
-        if personaje.rect.colliderect(puerta5):
-            level6()
-            return
         if personaje.rect.colliderect(puerta_exit):
             menulevels()
+            
+        if personaje.rect.colliderect(salida):
+            level2_parte1()
+            return
+            
         
         ventana.blit(fondo, (0, 0))
         #texto = fuente.render(f"sillas: {contador_sillas}", True, blanco)
@@ -447,6 +446,7 @@ def l1():
         #pygame.draw.rect(ventana, red, puerta1)  
         #pygame.draw.rect(ventana, red, puerta2)
         #pygame.draw.rect(ventana, red, puerta3)  
+        pygame.draw.rect(ventana,red,salida)
         personaje.dibujar(ventana)
         pygame.display.flip()
         clock.tick(60)
@@ -855,92 +855,96 @@ def level4():
         pygame.display.update()
         clock.tick(60)
 
+import pygame
+pygame.init()
 
+def level2_parte1():
+    ANCHO_WIN, ALTO_WIN = 1400, 800
 
+    ventana = pygame.display.set_mode((ANCHO_WIN, ALTO_WIN))
+    fondo = pygame.image.load("imgs/f.png").convert()
 
-def level5():
-    ancho = 1200
-    alto = 700
-    ventana = pygame.display.set_mode((ancho, alto))
-    pygame.display.set_caption("mini level 5")
+    ANCHO_MAPA, ALTO_MAPA = fondo.get_width(), fondo.get_height()
 
-    # Jugador con animaciones (movimiento libre, sin gravedad)
-    global personaje_elegido
-    jugador = Jugador(600, 600, 30, 30, con_gravedad=False, personaje=personaje_elegido, ancho_max=ancho)
-    jugador.velocidad_x = 15  # Velocidad para horizontal y vertical
+    jugador = Jugador(
+        400, 100,
+        100, 120,
+        con_gravedad=True,
+        personaje=personaje_elegido,
+        ancho_max=ANCHO_MAPA, ancho_hitbox=60, alto_hitbox=100
+    )
+    jugador.suelo_y = 622
+    
+    jugador.fuerza_salto = -23
 
-    clock = pygame.time.Clock()
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    return  # Regresa al hub
-        
-        teclas = pygame.key.get_pressed()
-        # Movimiento libre (horizontal y vertical)
-        # Llama a actualizar() que ahora maneja horizontal y vertical y cambia estado
-        jugador.actualizar(teclas)
-
-# Luego dibuja (actualiza la animación dentro de dibujar)
-        jugador.dibujar(ventana)  # Anima manualmente ya que no hay actualizar() para vertical
-        
-        ventana.fill((0, 0, 0))
-        jugador.dibujar(ventana)  # Dibuja animado (no rect blanco)
-        
-        pygame.display.flip()
-        clock.tick(60)
-
-def level6():
-    ancho = 1200
-    alto = 700
-    ventana = pygame.display.set_mode((ancho, alto))
-    pygame.display.set_caption("mini level 6")
-
-    # Jugador con animaciones (movimiento libre, sin gravedad)
-    global personaje_elegido
-    jugador = Jugador(600, 600, 30, 30, con_gravedad=False, personaje=personaje_elegido, ancho_max=ancho)
-    jugador.velocidad_x = 15  # Velocidad para horizontal y vertical
+    pared = [pygame.Rect(290, 527, 82, 80),
+            pygame.Rect(608,498,14,82),
+            pygame.Rect(596,564,37,40),
+            pygame.Rect(825,561,22,42),
+            pygame.Rect(1200,519,60,89),
+            pygame.Rect(1497,559,44,50),
+            pygame.Rect(1511,514,17,71),
+            pygame.Rect(1552,528,51,80),
+            pygame.Rect(1798,516,65,93),
+            pygame.Rect(1864,526,80,81),
+             ]
 
     clock = pygame.time.Clock()
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    return  # Regresa al hub
-        
-        teclas = pygame.key.get_pressed()
-        # Movimiento libre (horizontal y vertical)
-        if teclas[pygame.K_LEFT] and jugador.rect.left > 0:
-            jugador.rect.x -= jugador.velocidad_x
-            jugador.direccion = -1
-        if teclas[pygame.K_RIGHT] and jugador.rect.right < ancho:
-            jugador.rect.x += jugador.velocidad_x
-            jugador.direccion = 1
-        if teclas[pygame.K_UP] and jugador.rect.top > 0:
-            jugador.rect.y -= jugador.velocidad_x
-        if teclas[pygame.K_DOWN] and jugador.rect.bottom < alto:
-            jugador.rect.y += jugador.velocidad_x
-        
-        # Actualiza estado para animación (solo horizontal)
-        if teclas[pygame.K_LEFT] or teclas[pygame.K_RIGHT]:
-            jugador.estado = 'walking'
-        else:
-            jugador.estado = 'idle'
-        
-        jugador.animar()  # Anima manualmente ya que no hay actualizar() para vertical
-        
-        ventana.fill((0, 0, 0))
-        jugador.dibujar(ventana)  # Dibuja animado (no rect blanco)
-        
-        pygame.display.flip()
+    run = True
+    contador_vida = 0 
+
+    while run:
         clock.tick(60)
 
-# Llamada final para ejecutar el juego
+        teclas = pygame.key.get_pressed()
+        jugador.actualizar(teclas, paredes=pared)
+        for p in pared:
+            
+            if jugador.rect.colliderect(p):
+                contador_vida+=1
+                
+        if contador_vida == 3:
+            l1()
+            return
+       
+        
+        jugador.rect.x = max(0, min(jugador.rect.x, ANCHO_MAPA - jugador.rect.width))
+        jugador.rect.y = max(0, min(jugador.rect.y, ALTO_MAPA - jugador.rect.height))
+
+        cam_x = jugador.rect.x - ANCHO_WIN // 2
+        cam_y = jugador.rect.y - ALTO_WIN // 2
+
+        cam_x = max(0, min(cam_x, ANCHO_MAPA - ANCHO_WIN))
+        cam_y = max(0, min(cam_y, ALTO_MAPA - ALTO_WIN))
+
+        ventana.blit(fondo, (-cam_x, -cam_y))
+
+        for p in pared:
+            pygame.draw.rect(ventana, (255, 0, 0), (p.x - cam_x, p.y - cam_y, p.width, p.height))
+
+        temp_x = jugador.rect.x
+        temp_y = jugador.rect.y
+
+        jugador.rect.x -= cam_x
+        jugador.rect.y -= cam_y
+
+        jugador.dibujar(ventana)
+
+        jugador.rect.x = temp_x
+        jugador.rect.y = temp_y
+
+        pygame.display.update()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+
+    pygame.quit()
+
+
+
+
+
+
 if __name__ == "__main__":
     mainmenu()

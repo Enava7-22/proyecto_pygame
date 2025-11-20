@@ -28,11 +28,10 @@ def videojuego():
 
     objetos = []
 
-    # ----- CONTADOR DE DAÑO -----
+  
     daño = 0
     fuente = pygame.font.SysFont(None, 40)
 
-    # ----- CONTADOR DE TIEMPO -----
     tiempo_inicio = pygame.time.get_ticks()  # milisegundos
     # --------------------------------
 

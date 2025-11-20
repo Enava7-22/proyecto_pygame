@@ -150,58 +150,6 @@ class Jugador:
         superficie.blit(self.imagen_actual, (pos_x, pos_y))
         pygame.draw.rect(superficie, (0, 255, 0), self.rect, 2)
 
-
-def mainmenu():
-    ancho = 1200
-    alto = 700
-    ancho_botones = 300
-    alto_botones = 100
-
-    ventana = pygame.display.set_mode((ancho, alto))
-    pygame.display.set_caption("integrador equipo 6")
-
-    fondo = pygame.image.load("imgs/img.jpg")
-    fondo = pygame.transform.scale(fondo, (ancho, alto))
-    botones = pygame.image.load("imgs/boton inicio.png")
-    botones = pygame.transform.scale(botones, (ancho_botones, alto_botones))
-    configuracion = pygame.image.load("imgs/boton configuracion.png")
-    configuracion = pygame.transform.scale(configuracion, (ancho_botones, alto_botones))
-
-    boton_inicio_rect = pygame.Rect(450, 300, ancho_botones, alto_botones)
-
-    x1 = 0
-    x2 = ancho
-    velocidad = 2 
-    reloj = pygame.time.Clock()
-    ejecutar = True
-
-    while ejecutar:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                ejecutar = False
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:  
-                if boton_inicio_rect.collidepoint(event.pos):  
-                    menulevels()   
-
-        x1 -= velocidad
-        x2 -= velocidad
-
-        if x1 <= -ancho:
-            x1 = x2 + ancho
-        if x2 <= -ancho:
-            x2 = x1 + ancho
-
-        ventana.blit(fondo, (x1, 0))
-        ventana.blit(fondo, (x2, 0))
-        ventana.blit(botones, (450, 300))
-        ventana.blit(configuracion, (450, 450))
-
-        pygame.display.flip()
-        reloj.tick(60)  
-
-    pygame.quit()
-    sys.exit()
-    
 def dialogo1():
     ancho = 1200
     alto = 700
@@ -228,7 +176,6 @@ def dialogo1():
         
 
 
-
 def menulevels():
     pygame.mixer.music.stop()
     ancho = 1200
@@ -236,21 +183,34 @@ def menulevels():
     ventana = pygame.display.set_mode((ancho, alto))
     pygame.display.set_caption("ml")
 
-    botones_ancho, botones_alto = 300, 100
+    botones_ancho, botones_alto = 450, 120
 
     fondo = pygame.image.load("imgs/menulevels.jpg")
     fondo = pygame.transform.scale(fondo, (ancho, alto))
 
-    boton_level1 = pygame.image.load("imgs/boton level1.png")
-    boton_level1 = pygame.transform.scale(boton_level1, (botones_ancho, botones_alto))
-    boton_level2 = pygame.image.load("imgs/boton_play.png")
-    boton_level2 = pygame.transform.scale(boton_level2, (botones_ancho, botones_alto))
-    boton_level3 = pygame.image.load("imgs/boton_play.png")
-    boton_level3 = pygame.transform.scale(boton_level3, (botones_ancho, botones_alto))
+    # Cargar imágenes normales y presionadas
+    boton_level1_normal = pygame.image.load("imgs/boton_level1.png")
+    boton_level1_normal = pygame.transform.scale(boton_level1_normal, (botones_ancho, botones_alto))
+    boton_level1_presionado = pygame.image.load("imgs/boton_level1p.png")
+    boton_level1_presionado = pygame.transform.scale(boton_level1_presionado, (botones_ancho, botones_alto))
+    boton_level2_normal = pygame.image.load("imgs/boton_level2.png")
+    boton_level2_normal = pygame.transform.scale(boton_level2_normal, (botones_ancho, botones_alto))
+    boton_level2_presionado = pygame.image.load("imgs/boton_level2p.png")  
+    boton_level2_presionado = pygame.transform.scale(boton_level2_presionado, (botones_ancho, botones_alto))
+    boton_level3_normal = pygame.image.load("imgs/boton_level3.png") 
+    boton_level3_normal = pygame.transform.scale(boton_level3_normal, (botones_ancho, botones_alto))
+    boton_level3_presionado = pygame.image.load("imgs/boton_level3p.png")  
+    boton_level3_presionado = pygame.transform.scale(boton_level3_presionado, (botones_ancho, botones_alto))
 
-    botonl1 = pygame.Rect(450, 100, botones_ancho, botones_alto)
-    botonl2 = pygame.Rect(450, 250, botones_ancho, botones_alto)
-    botonl3 = pygame.Rect(450, 350, botones_ancho, botones_alto)
+    
+    centro_x = ancho // 2
+    botonl1 = pygame.Rect(centro_x - botones_ancho // 2, 100, botones_ancho, botones_alto)
+    botonl2 = pygame.Rect(centro_x - botones_ancho // 2, 300, botones_ancho, botones_alto)
+    botonl3 = pygame.Rect(centro_x - botones_ancho // 2, 500, botones_ancho, botones_alto)
+    # Estados para botones presionados
+    level1_presionado = False
+    level2_presionado = False
+    level3_presionado = False
 
     x1 = 0
     x2 = ancho
@@ -259,22 +219,33 @@ def menulevels():
     clock = pygame.time.Clock()
 
     while True:
+        mouse_pos = pygame.mouse.get_pos()  # Obtener posición del mouse una vez por frame
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    mainmenu()  # Regresa al menú principal
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:#level 1
-                if botonl1.collidepoint(event.pos):
-                    dialogo1()
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:#level 2
-                if botonl2.collidepoint(event.pos):
-                    dialogo1()
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:#level 3
-                if botonl3.collidepoint(event.pos):
-                    dialogo1()
+                    return()  # Regresa al menú principal
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:  # Clic izquierdo abajo
+                if botonl1.collidepoint(mouse_pos):
+                    level1_presionado = True
+                elif botonl2.collidepoint(mouse_pos):
+                    level2_presionado = True
+                elif botonl3.collidepoint(mouse_pos):
+                    level3_presionado = True
+            elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:  # Clic izquierdo up
+                if level1_presionado and botonl1.collidepoint(mouse_pos):
+                    dialogo1()  # Acción para nivel 1
+                elif level2_presionado and botonl2.collidepoint(mouse_pos):
+                    dialogo1()  # Acción para nivel 2 
+                elif level3_presionado and botonl3.collidepoint(mouse_pos):
+                    dialogo1()  # Acción para nivel 3 
+                # Resetear estados
+                level1_presionado = False
+                level2_presionado = False
+                level3_presionado = False
                     
         x1 -= velocidad
         x2 -= velocidad
@@ -285,9 +256,35 @@ def menulevels():
         
         ventana.blit(fondo, (x1, 0))
         ventana.blit(fondo, (x2, 0))
-        ventana.blit(boton_level1, (botonl1.x, botonl1.y))
-        ventana.blit(boton_level2, (botonl2.x, botonl2.y))
-        ventana.blit(boton_level3, (botonl3.x, botonl3.y))
+
+        # botones con hover y presionado
+        # Botón nivel 1
+        if level1_presionado:
+            ventana.blit(boton_level1_presionado, (botonl1.x, botonl1.y))
+        elif botonl1.collidepoint(mouse_pos):
+            hover_l1 = pygame.transform.scale(boton_level1_normal, (botones_ancho + 10, botones_alto + 5))
+            ventana.blit(hover_l1, (botonl1.x - 5, botonl1.y - 2.5))
+        else:
+            ventana.blit(boton_level1_normal, (botonl1.x, botonl1.y))
+
+        # Botón nivel 2
+        if level2_presionado:
+            ventana.blit(boton_level2_presionado, (botonl2.x, botonl2.y))
+        elif botonl2.collidepoint(mouse_pos):
+            hover_l2 = pygame.transform.scale(boton_level2_normal, (botones_ancho + 10, botones_alto + 5))
+            ventana.blit(hover_l2, (botonl2.x - 5, botonl2.y - 2.5))
+        else:
+            ventana.blit(boton_level2_normal, (botonl2.x, botonl2.y))
+
+        # Botón nivel 3
+        if level3_presionado:
+            ventana.blit(boton_level3_presionado, (botonl3.x, botonl3.y))
+        elif botonl3.collidepoint(mouse_pos):
+            hover_l3 = pygame.transform.scale(boton_level3_normal, (botones_ancho + 10, botones_alto + 5))
+            ventana.blit(hover_l3, (botonl3.x - 5, botonl3.y - 2.5))
+        else:
+            ventana.blit(boton_level3_normal, (botonl3.x, botonl3.y))
+
         pygame.display.flip()
         clock.tick(60)
 
@@ -325,7 +322,7 @@ def dialogo2():
     ancho = 1200
     alto = 700
     ventana =pygame.display.set_mode((ancho,alto))
-    pygame.display.set_caption("julioxromario")
+    pygame.display.set_caption("dialog2")
     
     fondo = pygame.image.load("imgs/d2.png")
     fondo = pygame.transform.scale(fondo,(ancho,alto))
@@ -946,11 +943,3 @@ def level2_parte1():
                 run = False
 
     pygame.quit()
-
-
-
-
-
-
-if __name__ == "__main__":
-    mainmenu()

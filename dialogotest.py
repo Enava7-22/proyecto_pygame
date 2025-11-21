@@ -10,9 +10,9 @@ def dialogo1():
     ancho = 1200
     alto = 700
     ventana = pygame.display.set_mode((ancho, alto))
-    pygame.display.set_caption("julioxromario")
+   
     
-    fondo = pygame.image.load("comic imgs/introduccion comic.png")
+    fondo = pygame.image.load("imgs/d1l2p1.png")
     fondo = pygame.transform.scale(fondo, (ancho, alto))
     
     clock = pygame.time.Clock()

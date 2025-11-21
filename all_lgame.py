@@ -3,7 +3,7 @@ import random
 import sys
 from personajes import cargar_frames, elegir_personaje
 from main_menu import mainmenu
-
+from muerte import muerto, pos_muerte, pantalla_muerte
 pygame.mixer.init()
 pygame.init()
 
@@ -776,23 +776,21 @@ def videojuego():
         for obj in objetos[:]:
             obj.y += 5
             ventana.blit(misil_img, obj)
-
             if jugador.rect.colliderect(obj):
                 objetos.remove(obj)
                 daño += 20
-                if daño > 100:
-                    daño = 100
-                    reinicio()
+                if daño >= 100:
+                    global muerto, pos_muerte
+                    muerto = True
+                    pos_muerte = (jugador.rect.x, jugador.rect.y)
+                    print(f"muerto set a True: {muerto}")  # Debug
+                    pantalla_muerte(personaje_elegido, nivel_actual)
                     return
-
             if obj.top > alto:
                 objetos.remove(obj)
 
         pygame.display.flip()
         clock.tick(60)
-
-
-
 
         
 def dialogo1_l3():
@@ -923,7 +921,6 @@ def level3():
         
         pygame.Rect(685.00,19.67,57.00,113.67),
     
-   
         
         
     ]
@@ -1095,7 +1092,9 @@ def level2_parte1():
             colisionando = False  # Resetear cuando deja de colisionar
 
         if contador_vida >= 3:
-            l1()
+            muerto = True
+            pos_muerte = (jugador.rect.x, jugador.rect.y)  # Guardar posición de muerte
+            pantalla_muerte(personaje_elegido, nivel_actual)  # Mostrar pantalla de muerte
             return
 
         # Cámara (calculada después de actualizar)

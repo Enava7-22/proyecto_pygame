@@ -37,8 +37,20 @@ def cargar_frames():
     f1_down = pygame.transform.scale(f1_down, (80, 100))
     f2_down = pygame.transform.scale(f2_down, (80, 100))
     f3_down = pygame.transform.scale(f3_down, (80, 100))
+    
+    p1_1_muerte = pygame.image.load("imgs/p2_muerte1.png").convert_alpha()
+    p1_2_muerte = pygame.image.load("imgs/p2_muerte2.png").convert_alpha()
+    p1_3_muerte = pygame.image.load("imgs/p2_muerte3.png").convert_alpha()
+    p1_4_muerte = pygame.image.load("imgs/p2_muerte4.png").convert_alpha()
+    p1_5_muerte = pygame.image.load("imgs/p2_muerte5.png").convert_alpha()
+    p1_1_muerte = pygame.transform.scale(p1_1_muerte, (80, 100))
+    p1_2_muerte = pygame.transform.scale(p1_2_muerte, (80, 100))
+    p1_3_muerte = pygame.transform.scale(p1_3_muerte, (80, 100))
+    p1_4_muerte = pygame.transform.scale(p1_4_muerte, (80, 100))
+    p1_5_muerte = pygame.transform.scale(p1_5_muerte, (80, 100))
 
-    frames_p1 = ([f1, f2, f1, f3], [f1l, f2l, f1l, f3l], [f1_up, f2_up, f1_up, f3_up], [f1_down, f2_down, f1_down, f3_down]) # Ciclo: 0,1,0,2 para fluidez
+    frames_p1 = ([f1, f2, f1, f3], [f1l, f2l, f1l, f3l], [f1_up, f2_up, f1_up, f3_up], [f1_down, f2_down, f1_down, f3_down], 
+                [p1_1_muerte, p1_2_muerte, p1_3_muerte, p1_4_muerte, p1_5_muerte]) # Ciclo: 0,1,0,2 para fluidez
 
     # Personaje 2
     p2_1 = pygame.image.load("imgs/p2_frame1.png").convert_alpha()
@@ -65,9 +77,21 @@ def cargar_frames():
     p2_2_down = pygame.transform.scale(p2_2_down, (80, 100))
     p2_3_down = pygame.transform.scale(p2_3_down, (80, 100))
 
-    frames_p2 = ([p2_1, p2_2, p2_1, p2_3], [p2_1l, p2_2l, p2_1l, p2_3l], [p2_1_up, p2_2_up, p2_1_up, p2_3_up], [p2_1_down, p2_2_down, p2_1_down, p2_3_down])
+    p2_1_muerte = pygame.image.load("imgs/p2_muerte1.png").convert_alpha()
+    p2_2_muerte = pygame.image.load("imgs/p2_muerte2.png").convert_alpha()
+    p2_3_muerte = pygame.image.load("imgs/p2_muerte3.png").convert_alpha()
+    p2_4_muerte = pygame.image.load("imgs/p2_muerte4.png").convert_alpha()
+    p2_5_muerte = pygame.image.load("imgs/p2_muerte5.png").convert_alpha()
+    p2_1_muerte = pygame.transform.scale(p2_1_muerte, (80, 100))
+    p2_2_muerte = pygame.transform.scale(p2_2_muerte, (80, 100))
+    p2_3_muerte = pygame.transform.scale(p2_3_muerte, (80, 100))
+    p2_4_muerte = pygame.transform.scale(p2_4_muerte, (80, 100))
+    p2_5_muerte = pygame.transform.scale(p2_5_muerte, (80, 100))
 
-    return frames_p1, frames_p2
+    frames_p2 = ([p2_1, p2_2, p2_1, p2_3], [p2_1l, p2_2l, p2_1l, p2_3l], [p2_1_up, p2_2_up, p2_1_up, p2_3_up], [p2_1_down, p2_2_down, p2_1_down, p2_3_down], 
+                [p2_1_muerte,p2_2_muerte,p2_3_muerte,p2_4_muerte,p2_5_muerte])
+
+    return {'p1': frames_p1, 'p2': frames_p2}
 
 # Pantalla de selección con animación preview
 def elegir_personaje():

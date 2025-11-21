@@ -832,8 +832,8 @@ def level3():
 
         ventana.fill((0, 0, 0))
         ventana.blit(fondo, (0, 0))
-        for p in pared:
-            pygame.draw.rect(ventana,red,p)
+        #for p in pared:
+            #pygame.draw.rect(ventana,red,p)
         jugador.dibujar(ventana)
         pygame.display.flip()
         clock.tick(60)
@@ -892,26 +892,25 @@ def level4():
         pygame.display.update()
         clock.tick(60)
 
-import pygame
-pygame.init()
+
 
 def level2_parte1():
     ANCHO_WIN, ALTO_WIN = 1400, 800
     ventana = pygame.display.set_mode((ANCHO_WIN, ALTO_WIN))
     fondo = pygame.image.load("imgs/f.png").convert()
-
     ANCHO_MAPA, ALTO_MAPA = fondo.get_width(), fondo.get_height()
 
     jugador = Jugador(
-        600.38, 480, 100, 120,
+        56, 495, 100, 120,
         con_gravedad=True,
         personaje=personaje_elegido,
-        ancho_max=ANCHO_MAPA,
-        ancho_hitbox=50,
-        alto_hitbox=80
+        ancho_max=ANCHO_MAPA
     )
     jugador.suelo_y = 622
     jugador.fuerza_salto = -23
+
+    hitbox_ancho = 50
+    hitbox_alto = 80
 
     pared = [
         pygame.Rect(290, 527, 82, 80),
@@ -928,29 +927,24 @@ def level2_parte1():
 
     clock = pygame.time.Clock()
     run = True
-    contador_vida = 0
-    colisionando = False  # Flag para evitar contar múltiples veces por colisión continua
 
     while run:
         clock.tick(60)
-
         teclas = pygame.key.get_pressed()
-        # Actualizar con paredes y límites del mapa integrados
         jugador.actualizar(teclas, paredes=pared, limite_inferior=ALTO_MAPA)
 
-        # Chequear colisiones para contador de vida (solo primera vez por colisión)
-        colision_actual = any(jugador.rect.colliderect(p) for p in pared)
-        if colision_actual and not colisionando:
-            contador_vida += 1
-            colisionando = True
-        elif not colision_actual:
-            colisionando = False  # Resetear cuando deja de colisionar
+        col_rect = pygame.Rect(
+            jugador.rect.x + (jugador.rect.width - hitbox_ancho) // 2,
+            jugador.rect.y + (jugador.rect.height - hitbox_alto),
+            hitbox_ancho,
+            hitbox_alto
+        )
 
-        if contador_vida >= 3:
-            l1()
-            return
+        for p in pared:
+            if col_rect.colliderect(p):
+                l1()
+                return
 
-        # Cámara (calculada después de actualizar)
         cam_x = jugador.rect.x - ANCHO_WIN // 2
         cam_y = jugador.rect.y - ALTO_WIN // 2
         cam_x = max(0, min(cam_x, ANCHO_MAPA - ANCHO_WIN))
@@ -958,16 +952,11 @@ def level2_parte1():
 
         ventana.blit(fondo, (-cam_x, -cam_y))
 
-        # Dibujar paredes para debug
-        for p in pared:
-            pygame.draw.rect(ventana, (255, 0, 0), (p.x - cam_x, p.y - cam_y, p.width, p.height))
-
-        # Dibujar jugador (ajuste temporal para pantalla)
         temp_x, temp_y = jugador.rect.x, jugador.rect.y
         jugador.rect.x -= cam_x
         jugador.rect.y -= cam_y
         jugador.dibujar(ventana)
-        jugador.rect.x, jugador.rect.y = temp_x, temp_y  # Restaurar posición del mundo
+        jugador.rect.x, jugador.rect.y = temp_x, temp_y
 
         pygame.display.update()
 

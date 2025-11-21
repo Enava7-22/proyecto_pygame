@@ -62,9 +62,9 @@ def mainmenu():
     boton_config_normal = pygame.transform.scale(boton_config_normal, (ancho_botones, alto_botones))
     boton_config_presionado = pygame.image.load("imgs/boton_optionsp.png")
     boton_config_presionado = pygame.transform.scale(boton_config_presionado, (ancho_botones, alto_botones))
-    boton_salir_normal = pygame.image.load("imgs/boton_salir.png")
+    boton_salir_normal = pygame.image.load("imgs/boton_salir_en.png")
     boton_salir_normal = pygame.transform.scale(boton_salir_normal, (ancho_botones, alto_botones))
-    boton_salir_presionado = pygame.image.load("imgs/boton_salirp.png")
+    boton_salir_presionado = pygame.image.load("imgs/boton_salirp_en.png")
     boton_salir_presionado = pygame.transform.scale(boton_salir_presionado, (ancho_botones, alto_botones))
 
     # Rects para detectar clics y hover

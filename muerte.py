@@ -1,0 +1,136 @@
+import pygame
+from personajes import cargar_frames
+
+# Variables globales para muerte
+muerto = False
+pos_muerte = (0, 0)  # Posición donde murió el personaje
+
+def pantalla_muerte(personaje_elegido, nivel_actual):
+    global muerto
+    muerto = True  # Forzar a True para asegurar el bucle
+    print("Entrando a pantalla_muerte")# Debug
+    # Cargar animación de muerte
+    try:
+        frames_muerte = cargar_frames()[personaje_elegido][4]
+        frames_muerte = [pygame.transform.scale(f, (100, 120)) for f in frames_muerte]
+        tiene_animacion = True
+        print("Frames de muerte cargados")  # Debug
+    except (IndexError, TypeError):
+        frames_muerte = [pygame.image.load("imgs/personaje.png")]
+        frames_muerte[0] = pygame.transform.scale(frames_muerte[0], (100, 120))
+        tiene_animacion = False
+        print("Fallback a imagen estática")  # Debug
+
+    # Cargar botones
+    try:
+        boton_reiniciar_normal = pygame.image.load("imgs/boton_reiniciar.png")
+        boton_reiniciar_presionado = pygame.image.load("imgs/boton_reiniciarp.png")
+        boton_menu_normal = pygame.image.load("imgs/boton_menu.png")
+        boton_menu_presionado = pygame.image.load("imgs/boton_menup.png")
+        print("Botones cargados")  # Debug
+    except FileNotFoundError:
+        print("Error: Imágenes de botones no encontradas")  # Debug
+        return
+
+    ancho_boton, alto_boton = 300, 100
+    boton_reiniciar_normal = pygame.transform.scale(boton_reiniciar_normal, (ancho_boton, alto_boton))
+    boton_reiniciar_presionado = pygame.transform.scale(boton_reiniciar_presionado, (ancho_boton, alto_boton))
+    boton_menu_normal = pygame.transform.scale(boton_menu_normal, (ancho_boton, alto_boton))
+    boton_menu_presionado = pygame.transform.scale(boton_menu_presionado, (ancho_boton, alto_boton))
+
+    ventana_actual = pygame.display.get_surface()
+    centro_x = ventana_actual.get_width() // 2
+    rect_reiniciar = pygame.Rect(centro_x - ancho_boton // 2, 300, ancho_boton, alto_boton)
+    rect_menu = pygame.Rect(centro_x - ancho_boton // 2, 450, ancho_boton, alto_boton)
+
+    reiniciar_presionado = False
+    menu_presionado = False
+
+    frame_actual = 0
+    tiempo_anim = pygame.time.get_ticks()
+    alpha = 0
+    fade_completo = False
+    tiempo_inicio = pygame.time.get_ticks()
+
+    print(f"muerto antes del bucle: {muerto}")  # Debug
+    while muerto:
+        print("En bucle while muerto")  # Debug (quita después, puede spamear)
+        ahora = pygame.time.get_ticks()
+        mouse_pos = pygame.mouse.get_pos()
+
+        # Animar muerte
+        if tiene_animacion and ahora - tiempo_anim > 200:
+            tiempo_anim = ahora
+            frame_actual = (frame_actual + 1) % len(frames_muerte)
+
+        # Fade to black
+        if not fade_completo:
+            alpha = min(255, (ahora - tiempo_inicio) / 2000 * 255)
+            if alpha >= 255:
+                fade_completo = True
+                print("Fade completo")  # Debug
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+            elif fade_completo and event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                if rect_reiniciar.collidepoint(mouse_pos):
+                    reiniciar_presionado = True
+                elif rect_menu.collidepoint(mouse_pos):
+                    menu_presionado = True
+            elif fade_completo and event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                if reiniciar_presionado and rect_reiniciar.collidepoint(mouse_pos):
+                    print("Reiniciando nivel")  # Debug
+                    muerto = False
+                    if nivel_actual:
+                        nivel_actual()
+                    return
+                elif menu_presionado and rect_menu.collidepoint(mouse_pos):
+                    print("Saliendo al menú")  # Debug
+                    muerto = False
+                    from main_menu import mainmenu
+                    mainmenu()
+                    return
+                reiniciar_presionado = False
+                menu_presionado = False
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_p:
+                print("P presionado, saliendo")  # Debug
+                muerto = False
+                return
+
+        # Dibujar
+        ventana_actual.fill((0, 0, 0))
+
+        if not fade_completo:
+            imagen_muerte = frames_muerte[frame_actual]
+            ventana_actual.blit(imagen_muerte, (pos_muerte[0] - 50, pos_muerte[1] - 60))
+
+        if alpha > 0:
+            superficie_fade = pygame.Surface(ventana_actual.get_size())
+            superficie_fade.set_alpha(alpha)
+            superficie_fade.fill((0, 0, 0))
+            ventana_actual.blit(superficie_fade, (0, 0))
+
+        if fade_completo:
+            # Dibujar botones
+            if reiniciar_presionado:
+                ventana_actual.blit(boton_reiniciar_presionado, (rect_reiniciar.x, rect_reiniciar.y))
+            elif rect_reiniciar.collidepoint(mouse_pos):
+                hover_reiniciar = pygame.transform.scale(boton_reiniciar_normal, (ancho_boton + 10, alto_boton + 5))
+                ventana_actual.blit(hover_reiniciar, (rect_reiniciar.x - 5, rect_reiniciar.y - 2.5))
+            else:
+                ventana_actual.blit(boton_reiniciar_normal, (rect_reiniciar.x, rect_reiniciar.y))
+
+            if menu_presionado:
+                ventana_actual.blit(boton_menu_presionado, (rect_menu.x, rect_menu.y))
+            elif rect_menu.collidepoint(mouse_pos):
+                hover_menu = pygame.transform.scale(boton_menu_normal, (ancho_boton + 10, alto_boton + 5))
+                ventana_actual.blit(hover_menu, (rect_menu.x - 5, rect_menu.y - 2.5))
+            else:
+                ventana_actual.blit(boton_menu_normal, (rect_menu.x, rect_menu.y))
+
+        pygame.display.flip()
+        pygame.time.Clock().tick(60)
+
+    print("Saliendo de pantalla_muerte")  # Debug

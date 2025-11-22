@@ -572,7 +572,34 @@ def l1():
     red = (255, 0, 0)
     clock = pygame.time.Clock()
     
+    global nivel_actual
+    nivel_actual = l1
+    
     while True:
+        
+        
+        
+        
+        
+       
+
+
+        clock.tick(60)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_p:
+                    global pausa
+                    pausa = not pausa
+
+        if pausa:
+            menu_pausa()
+            continue
+        
+                        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -580,6 +607,12 @@ def l1():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     menulevels()  
+                    
+                    
+                    
+                    
+                    
+            
                 
         teclas = pygame.key.get_pressed()
         personaje.actualizar(teclas, paredes=pared)  
@@ -612,7 +645,7 @@ def l1():
         pygame.draw.rect(ventana,red,salida)
         personaje.dibujar(ventana)
         pygame.display.flip()
-        clock.tick(60)
+       
 def level2():
     
 
@@ -1043,7 +1076,8 @@ def d1l2p1():
                 sys.exit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
-                    l1()
+                    level2_parte1()
+                    
         
         ventana.blit(fondo, (0, 0))
         pygame.display.update()
@@ -1053,95 +1087,126 @@ def d1l2p1():
 
 
 def level2_parte1():
-    ANCHO_WIN, ALTO_WIN = 1400, 800
+    import pygame
+    import sys
 
-    ventana = pygame.display.set_mode((ANCHO_WIN, ALTO_WIN))
-    fondo = pygame.image.load("imgs/f.png").convert()
+    pygame.init()
 
-    ANCHO_MAPA, ALTO_MAPA = fondo.get_width(), fondo.get_height()
+    ANCHO = 800
+    ALTO = 600
+    ventana = pygame.display.set_mode((ANCHO, ALTO))
+    pygame.display.set_caption("Juego")
 
-    jugador = Jugador(
-        53, 480, 100, 120,
-        con_gravedad=True,
-        personaje=personaje_elegido,
-        ancho_max=ANCHO_MAPA
-    )
-    jugador.suelo_y = 622
-    jugador.fuerza_salto = -23
-
-    hitbox_ancho = 50
-    hitbox_alto = 80
-
-    pared = [
-        pygame.Rect(290, 527, 82, 80),
-        pygame.Rect(608, 498, 14, 82),
-        pygame.Rect(596, 564, 37, 40),
-        pygame.Rect(825, 561, 22, 42),
-        pygame.Rect(1200, 519, 60, 89),
-        pygame.Rect(1497, 559, 44, 50),
-        pygame.Rect(1511, 514, 17, 71),
-        pygame.Rect(1552, 528, 51, 80),
-        pygame.Rect(1798, 516, 65, 93),
-        pygame.Rect(1864, 526, 80, 81),
-    ]
-    
-    d1 = pygame.Rect(140,564,28,24)
-
-    red = (255,0,0)
     clock = pygame.time.Clock()
+
     run = True
-
-    global nivel_actual
-    nivel_actual = level2_parte1
-
     while run:
         clock.tick(60)
-
+        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_p:
-                    global pausa
-                    pausa = not pausa
+                run = False
 
-        if pausa:
-            menu_pausa()
-            continue
+        ventana.fill((0, 0, 0))
+        pygame.display.update()
+
+    pygame.quit()
+    sys.exit()
+
+    
         
-        teclas = pygame.key.get_pressed()
-        jugador.actualizar(teclas, paredes=pared, limite_inferior=ALTO_MAPA)
+def level2_parte2():
+        
+    
+    global personaje_elegido
+    jugador = Jugador(69,520,28,72, con_gravedad=False, personaje=personaje_elegido, ancho_max=ancho) 
+    ANCHO_WIN, ALTO_WIN = 1400, 800
+    
+    
+    ventana = pygame.display.set_mode((ANCHO_WIN, ALTO_WIN))
+    pygame.display.set_caption("Juego con objetos en fila separados")
 
-        col_rect = pygame.Rect(
-            jugador.rect.x + (jugador.rect.width - hitbox_ancho) // 2,
-            jugador.rect.y + (jugador.rect.height - hitbox_alto),
-            hitbox_ancho,
-            hitbox_alto
-        )
+    fondo = pygame.image.load("imgs/f2.png").convert()
+    ANCHO_MAPA, ALTO_MAPA = fondo.get_width(), fondo.get_height()
 
-        for p in pared:
-            if col_rect.colliderect(p):
-                l1()
-                return
+    
+    vel = 10
 
-        if jugador.rect.colliderect(d1):
-            d1l2p1()
-            return
+    vel_y = 0
+    gravedad = 1
+    saltando = False
+    fuerza_salto = -20
 
-        cam_x = jugador.rect.x - ANCHO_WIN // 2
-        cam_y = jugador.rect.y - ALTO_WIN // 2
+    suelo = 600
+
+    objetos = []  
+    frame_counter = 0
+    frame_aparicion = 60
+    separacion_horizontal = 60
+
+    clock = pygame.time.Clock()
+    run = True
+    
+    contador_daño = 0
+    
+    
+    while run:
+        clock.tick(60)
+        frame_counter += 1
+        keys = pygame.key.get_pressed()
+
+        if keys[pygame.K_LEFT]:
+            jugador.x -= vel
+        if keys[pygame.K_RIGHT]:
+            jugador.x += vel
+        if keys[pygame.K_SPACE] and not saltando:
+            vel_y = fuerza_salto
+            saltando = True
+
+        vel_y += gravedad
+        jugador.y += vel_y
+        
+        
+
+        if jugador.y + jugador.height >= suelo:
+            jugador.y = suelo - jugador.height
+            vel_y = 0
+            saltando = False
+
+        jugador.x = max(0, min(jugador.x, ANCHO_MAPA - jugador.width))
+        jugador.y = max(0, min(jugador.y, ALTO_MAPA - jugador.height))
+
+        if jugador.x >= 600 and frame_counter >= frame_aparicion:
+            for i in range(5):
+                obj_x = 600 + i * separacion_horizontal
+                obj_y = 521
+                obj = pygame.Rect(obj_x, obj_y, 50, 50)
+                objetos.append(obj)
+            frame_counter = 0
+
+        for obj in objetos[:]:
+            obj.x += 10
+            if obj.x > ANCHO_MAPA:
+                objetos.remove(obj)
+
+        cam_x = jugador.x - ANCHO_WIN // 2
+        cam_y = jugador.y - ALTO_WIN // 2
         cam_x = max(0, min(cam_x, ANCHO_MAPA - ANCHO_WIN))
         cam_y = max(0, min(cam_y, ALTO_MAPA - ALTO_WIN))
 
         ventana.blit(fondo, (-cam_x, -cam_y))
-
-        temp_x, temp_y = jugador.rect.x, jugador.rect.y
-        jugador.rect.x -= cam_x
-        jugador.rect.y -= cam_y
-        jugador.dibujar(ventana)
-        jugador.rect.x, jugador.rect.y = temp_x, temp_y
-
-       
+        pygame.draw.rect(ventana, (255, 0, 0), (jugador.x - cam_x, jugador.y - cam_y, jugador.width, jugador.height))
+        for obj in objetos:
+            pygame.draw.rect(ventana, (0, 255, 0), (obj.x - cam_x, obj.y - cam_y, obj.width, obj.height))
 
         pygame.display.update()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+                
+        print(contador_daño)
+
+    pygame.quit()
+
+

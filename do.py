@@ -27,6 +27,9 @@ def game():
     clock = pygame.time.Clock()
     run = True
     
+    contador_daño = 0
+    
+    
     while run:
         clock.tick(60)
         frame_counter += 1
@@ -42,6 +45,8 @@ def game():
 
         vel_y += gravedad
         jugador.y += vel_y
+        
+        if jugador
 
         if jugador.y + jugador.height >= suelo:
             jugador.y = suelo - jugador.height
@@ -79,6 +84,8 @@ def game():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
+                
+        print(contador_daño)
 
     pygame.quit()
 

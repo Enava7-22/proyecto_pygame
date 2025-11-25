@@ -396,7 +396,7 @@ def menulevels():
                     l2p1()
                         # Acción para nivel 2 
                 elif level3_presionado and botonl3.collidepoint(mouse_pos):
-                    dialogo1()  # Acción para nivel 3 
+                    l2p2()  # Acción para nivel 3 
                 # Resetear estados
                 level1_presionado = False
                 level2_presionado = False

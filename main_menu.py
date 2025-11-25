@@ -3,41 +3,9 @@ import sys
 from personajes import elegir_personaje
 import all_lgame 
 
-def configuracion():
-    # Pantalla de configuración simple
-    ancho, alto = 1200, 700
-    ventana = pygame.display.set_mode((ancho, alto))
-    pygame.display.set_caption("Configuración")
-    # Cargar fondo 
-    fondo = pygame.image.load("imgs/menulevels.jpg")
-    fondo = pygame.transform.scale(fondo, (ancho, alto))
-    # Texto y botón volver
-    fuente = pygame.font.SysFont(None, 60)
-    texto_config = fuente.render("Configuración", True, (255, 255, 255))
-    boton_volver = pygame.image.load("imgs/boton_salir.png")  # Reusa imagen o cambia
-    boton_volver = pygame.transform.scale(boton_volver, (300, 100))
-    boton_volver_rect = pygame.Rect(450, 400, 300, 100)
-    reloj = pygame.time.Clock()
-    ejecutar = True
-    while ejecutar:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                ejecutar = False
-            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                mouse_pos = event.pos
-                if boton_volver_rect.collidepoint(mouse_pos):
-                    ejecutar = False  # Vuelve al menú principal
-        ventana.blit(fondo, (0, 0))
-        ventana.blit(texto_config, (ancho // 2 - texto_config.get_width() // 2, 200))
-        mouse_pos = pygame.mouse.get_pos()
-        # Hover para botón volver
-        if boton_volver_rect.collidepoint(mouse_pos):
-            hover_volver = pygame.transform.scale(boton_volver, (310, 105))
-            ventana.blit(hover_volver, (445, 395))
-        else:
-            ventana.blit(boton_volver, (450, 400))
-        pygame.display.flip()
-        reloj.tick(60)
+# Variables globales para configuración
+volumen = 50  # 1-100
+idioma = "es"  # "es" o "en"
 
 def mainmenu():
     pygame.init()  
@@ -54,17 +22,17 @@ def mainmenu():
     logo = pygame.image.load("imgs/logo_juego.png")
     logo = pygame.transform.scale(logo, (ancho_logo, alto_logo))
     # Botón inicio,config,salir: normal y presionado
-    boton_inicio_normal = pygame.image.load("imgs/boton_play.png")
+    boton_inicio_normal = pygame.image.load("imgs/boton_jugar.png")
     boton_inicio_normal = pygame.transform.scale(boton_inicio_normal, (ancho_botones, alto_botones))
-    boton_inicio_presionado = pygame.image.load("imgs/boton_playp.png")
+    boton_inicio_presionado = pygame.image.load("imgs/boton_jugarp.png")
     boton_inicio_presionado = pygame.transform.scale(boton_inicio_presionado, (ancho_botones, alto_botones))
-    boton_config_normal = pygame.image.load("imgs/boton_options.png")
+    boton_config_normal = pygame.image.load("imgs/boton_opciones.png")
     boton_config_normal = pygame.transform.scale(boton_config_normal, (ancho_botones, alto_botones))
-    boton_config_presionado = pygame.image.load("imgs/boton_optionsp.png")
+    boton_config_presionado = pygame.image.load("imgs/boton_opciones.png")
     boton_config_presionado = pygame.transform.scale(boton_config_presionado, (ancho_botones, alto_botones))
-    boton_salir_normal = pygame.image.load("imgs/boton_salir_en.png")
+    boton_salir_normal = pygame.image.load("imgs/boton_salir.png")
     boton_salir_normal = pygame.transform.scale(boton_salir_normal, (ancho_botones, alto_botones))
-    boton_salir_presionado = pygame.image.load("imgs/boton_salirp_en.png")
+    boton_salir_presionado = pygame.image.load("imgs/boton_salirp.png")
     boton_salir_presionado = pygame.transform.scale(boton_salir_presionado, (ancho_botones, alto_botones))
 
     # Rects para detectar clics y hover
@@ -155,6 +123,116 @@ def mainmenu():
 
     pygame.quit()
     sys.exit()
+
+def configuracion():
+    global volumen, idioma  # Declarar globales al inicio
+    ancho, alto = 1200, 700
+    ventana = pygame.display.set_mode((ancho, alto))
+    pygame.display.set_caption("Configuración")
+
+    
+    try:
+        bandera_ingles = pygame.image.load("imgs/british.png")
+        bandera_espanol = pygame.image.load("imgs/españa.png")
+        boton_salir_normal = pygame.image.load("imgs/boton_salir.png")
+        boton_salir_presionado = pygame.image.load("imgs/boton_salirp.png")  # Imagen presionada
+    except FileNotFoundError:
+        print("Error cargando imágenes de configuración")
+        return
+
+    # Escalar imágenes
+    bandera_ingles = pygame.transform.scale(bandera_ingles, (100, 60))
+    bandera_espanol = pygame.transform.scale(bandera_espanol, (100, 60))
+    boton_salir_normal = pygame.transform.scale(boton_salir_normal, (200, 80))
+    boton_salir_presionado = pygame.transform.scale(boton_salir_presionado, (200, 80))
+
+    # Fuentes
+    fuente_titulo = pygame.font.SysFont("arial", 60)
+    fuente_texto = pygame.font.SysFont("arial", 40)
+    fuente_volumen = pygame.font.SysFont("arial", 30)
+
+    # Rects para elementos
+    rect_bandera_ingles = pygame.Rect(400, 300, 100, 60)
+    rect_bandera_espanol = pygame.Rect(700, 300, 100, 60)
+    rect_slider_volumen = pygame.Rect(400, 200, 400, 20) 
+    rect_boton_salir = pygame.Rect(500, 500, 200, 80)
+
+    slider_pos = 400 + (volumen / 100) * 400 
+
+    # Estado para botón salir
+    salir_presionado = False
+
+    clock = pygame.time.Clock()
+    ejecutando = True
+
+    while ejecutando:
+        mouse_pos = pygame.mouse.get_pos()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                if rect_bandera_ingles.collidepoint(mouse_pos):
+                    idioma = "en"
+                elif rect_bandera_espanol.collidepoint(mouse_pos):
+                    idioma = "es"
+                elif rect_slider_volumen.collidepoint(mouse_pos):
+                    # Mover slider
+                    slider_pos = max(400, min(mouse_pos[0], 800))
+                    volumen = int((slider_pos - 400) / 400 * 100)
+                elif rect_boton_salir.collidepoint(mouse_pos):
+                    salir_presionado = True
+            elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                if salir_presionado and rect_boton_salir.collidepoint(mouse_pos):
+                    ejecutando = False
+                salir_presionado = False  # Resetear
+            elif event.type == pygame.MOUSEMOTION and pygame.mouse.get_pressed()[0]:
+                if rect_slider_volumen.collidepoint(mouse_pos):
+                    slider_pos = max(400, min(mouse_pos[0], 800))
+                    volumen = int((slider_pos - 400) / 400 * 100)
+
+        # Dibujar
+        ventana.fill((50, 50, 50))
+
+        # Título
+        titulo = fuente_titulo.render("Configuración", True, (255, 255, 255))
+        ventana.blit(titulo, (ancho // 2 - titulo.get_width() // 2, 50))
+
+        # Volumen
+        texto_volumen = fuente_texto.render("Volumen", True, (255, 255, 255))
+        ventana.blit(texto_volumen, (400, 150))
+        # Barra del slider
+        pygame.draw.rect(ventana, (200, 200, 200), rect_slider_volumen)
+        # Indicador
+        pygame.draw.circle(ventana, (255, 0, 0), (int(slider_pos), 210), 10)
+        # Texto del valor
+        texto_valor_volumen = fuente_volumen.render(f"{volumen}", True, (255, 255, 255))
+        ventana.blit(texto_valor_volumen, (820, 190))
+
+        # Idioma
+        texto_idioma = fuente_texto.render("Idioma", True, (255, 255, 255))
+        ventana.blit(texto_idioma, (400, 250))
+        ventana.blit(bandera_ingles, (400, 300))
+        ventana.blit(bandera_espanol, (700, 300))
+        # Indicador de selección
+        if idioma == "en":
+            pygame.draw.rect(ventana, (0, 255, 0), rect_bandera_ingles, 3)
+        elif idioma == "es":
+            pygame.draw.rect(ventana, (0, 255, 0), rect_bandera_espanol, 3)
+
+        # Botón salir con animación
+        if salir_presionado:
+            ventana.blit(boton_salir_presionado, (rect_boton_salir.x, rect_boton_salir.y))
+        elif rect_boton_salir.collidepoint(mouse_pos):
+            hover_salir = pygame.transform.scale(boton_salir_normal, (210, 85))  # Hover
+            ventana.blit(hover_salir, (rect_boton_salir.x - 5, rect_boton_salir.y - 2.5))
+        else:
+            ventana.blit(boton_salir_normal, (rect_boton_salir.x, rect_boton_salir.y))
+
+        pygame.display.flip()
+        clock.tick(60)
+    mainmenu()
+
 
 if __name__ == "__main__":
     mainmenu()

@@ -11,7 +11,7 @@ frames_p2 = None
 def cargar_frames():
     global frames_p1, frames_p2
     if frames_p1 is not None:
-        return frames_p1, frames_p2  # Ya cargados
+        return {'p1': frames_p1, 'p2': frames_p2} 
     
     # Personaje 1
     f1 = pygame.image.load("imgs/frame1.png").convert_alpha()
@@ -38,11 +38,11 @@ def cargar_frames():
     f2_down = pygame.transform.scale(f2_down, (80, 100))
     f3_down = pygame.transform.scale(f3_down, (80, 100))
     
-    p1_1_muerte = pygame.image.load("imgs/p2_muerte1.png").convert_alpha()
-    p1_2_muerte = pygame.image.load("imgs/p2_muerte2.png").convert_alpha()
-    p1_3_muerte = pygame.image.load("imgs/p2_muerte3.png").convert_alpha()
-    p1_4_muerte = pygame.image.load("imgs/p2_muerte4.png").convert_alpha()
-    p1_5_muerte = pygame.image.load("imgs/p2_muerte5.png").convert_alpha()
+    p1_1_muerte = pygame.image.load("imgs/p1_muerte1.png").convert_alpha()
+    p1_2_muerte = pygame.image.load("imgs/p1_muerte2.png").convert_alpha()
+    p1_3_muerte = pygame.image.load("imgs/p1_muerte3.png").convert_alpha()
+    p1_4_muerte = pygame.image.load("imgs/p1_muerte4.png").convert_alpha()
+    p1_5_muerte = pygame.image.load("imgs/p1_muerte5.png").convert_alpha()
     p1_1_muerte = pygame.transform.scale(p1_1_muerte, (80, 100))
     p1_2_muerte = pygame.transform.scale(p1_2_muerte, (80, 100))
     p1_3_muerte = pygame.transform.scale(p1_3_muerte, (80, 100))

@@ -3,25 +3,30 @@ from personajes import cargar_frames
 
 # Variables globales para muerte
 muerto = False
-pos_muerte = (0, 0)  # Posición donde murió el personaje
+pos_muerte = (0, 0)  #muerte personaje
 
 def pantalla_muerte(personaje_elegido, nivel_actual):
     global muerto
-    muerto = True  # Forzar a True para asegurar el bucle
-    print("Entrando a pantalla_muerte")# Debug
+    muerto = True
+    print("Entrando a pantalla_muerte")  # Debug
+    
+    # Aseguramos que los frames estén cargados
+    cargar_frames()
+    
     # Cargar animación de muerte
     try:
         frames_muerte = cargar_frames()[personaje_elegido][4]
         frames_muerte = [pygame.transform.scale(f, (100, 120)) for f in frames_muerte]
         tiene_animacion = True
-        print("Frames de muerte cargados")  # Debug
-    except (IndexError, TypeError):
+        print(f"Frames de muerte cargados para {personaje_elegido}: {len(frames_muerte)} frames")  # Debug
+    except (IndexError, TypeError, KeyError) as e:
+        print(f"Error cargando frames de muerte: {e}")  # Debug
         frames_muerte = [pygame.image.load("imgs/personaje.png")]
         frames_muerte[0] = pygame.transform.scale(frames_muerte[0], (100, 120))
         tiene_animacion = False
         print("Fallback a imagen estática")  # Debug
 
-    # Cargar botones
+    # Cargar botones (igual que antes)
     try:
         boton_reiniciar_normal = pygame.image.load("imgs/boton_reiniciar.png")
         boton_reiniciar_presionado = pygame.image.load("imgs/boton_reiniciarp.png")
@@ -38,6 +43,12 @@ def pantalla_muerte(personaje_elegido, nivel_actual):
     boton_menu_normal = pygame.transform.scale(boton_menu_normal, (ancho_boton, alto_boton))
     boton_menu_presionado = pygame.transform.scale(boton_menu_presionado, (ancho_boton, alto_boton))
 
+    try:
+        fuente_texto = pygame.font.Font("fuentes/leadcoat.ttf", 80)
+    except:
+        fuente_texto = pygame.font.SysFont("arial", 80)  # Fuente del sistema, más grande
+    texto_mensaje = fuente_texto.render("tu puedes sigue intentando", True, (255, 255, 255))
+    
     ventana_actual = pygame.display.get_surface()
     centro_x = ventana_actual.get_width() // 2
     rect_reiniciar = pygame.Rect(centro_x - ancho_boton // 2, 300, ancho_boton, alto_boton)
@@ -54,22 +65,22 @@ def pantalla_muerte(personaje_elegido, nivel_actual):
 
     print(f"muerto antes del bucle: {muerto}")  # Debug
     while muerto:
-        print("En bucle while muerto")  # Debug (quita después, puede spamear)
         ahora = pygame.time.get_ticks()
         mouse_pos = pygame.mouse.get_pos()
 
-        # Animar muerte
-        if tiene_animacion and ahora - tiempo_anim > 200:
+        # Animar muerte (pausa en el último frame)
+        if tiene_animacion and ahora - tiempo_anim > 500 and frame_actual < len(frames_muerte) - 1:
             tiempo_anim = ahora
-            frame_actual = (frame_actual + 1) % len(frames_muerte)
+            frame_actual += 1  # Avanzar sin ciclar
 
-        # Fade to black
+        # Fade to black (más lento: 4 segundos)
         if not fade_completo:
-            alpha = min(255, (ahora - tiempo_inicio) / 2000 * 255)
+            alpha = min(255, (ahora - tiempo_inicio) / 4000 * 255)
             if alpha >= 255:
                 fade_completo = True
                 print("Fade completo")  # Debug
 
+        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -101,10 +112,12 @@ def pantalla_muerte(personaje_elegido, nivel_actual):
 
         # Dibujar
         ventana_actual.fill((0, 0, 0))
-
         if not fade_completo:
             imagen_muerte = frames_muerte[frame_actual]
-            ventana_actual.blit(imagen_muerte, (pos_muerte[0] - 50, pos_muerte[1] - 60))
+            # Centrar en la pantalla
+            x_centro = ventana_actual.get_width() // 2 - imagen_muerte.get_width() // 2
+            y_centro = ventana_actual.get_height() // 2 - imagen_muerte.get_height() // 2
+            ventana_actual.blit(imagen_muerte, (x_centro, y_centro))
 
         if alpha > 0:
             superficie_fade = pygame.Surface(ventana_actual.get_size())
@@ -113,7 +126,8 @@ def pantalla_muerte(personaje_elegido, nivel_actual):
             ventana_actual.blit(superficie_fade, (0, 0))
 
         if fade_completo:
-            # Dibujar botones
+            ventana_actual.blit(texto_mensaje, (centro_x - texto_mensaje.get_width() // 2, 100))
+            # Dibujar botones (igual que antes)
             if reiniciar_presionado:
                 ventana_actual.blit(boton_reiniciar_presionado, (rect_reiniciar.x, rect_reiniciar.y))
             elif rect_reiniciar.collidepoint(mouse_pos):

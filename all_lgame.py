@@ -574,7 +574,34 @@ def l1():
     red = (255, 0, 0)
     clock = pygame.time.Clock()
     
+    global nivel_actual
+    nivel_actual = l1
+    
     while True:
+        
+        
+        
+        
+        
+       
+
+
+        clock.tick(60)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_p:
+                    global pausa
+                    pausa = not pausa
+
+        if pausa:
+            menu_pausa()
+            continue
+        
+                        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -582,6 +609,12 @@ def l1():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     menulevels()  
+                    
+                    
+                    
+                    
+                    
+            
                 
         teclas = pygame.key.get_pressed()
         personaje.actualizar(teclas, paredes=pared)  
@@ -614,7 +647,7 @@ def l1():
         pygame.draw.rect(ventana,red,salida)
         personaje.dibujar(ventana)
         pygame.display.flip()
-        clock.tick(60)
+       
 def level2():
     
 
@@ -964,8 +997,8 @@ def level3():
 
         ventana.fill((0, 0, 0))
         ventana.blit(fondo, (0, 0))
-        for p in pared:
-            pygame.draw.rect(ventana,red,p)
+        #for p in pared:
+            #pygame.draw.rect(ventana,red,p)
         jugador.dibujar(ventana)
         pygame.display.flip()
         clock.tick(60)
@@ -1023,106 +1056,159 @@ def level4():
         # pygame.draw.rect(ventana,red,p)
         pygame.display.update()
         clock.tick(60)
+        
+        
+        
 
-import pygame
-pygame.init()
-
-def level2_parte1():
-    ANCHO_WIN, ALTO_WIN = 1400, 800
-    ventana = pygame.display.set_mode((ANCHO_WIN, ALTO_WIN))
-    fondo = pygame.image.load("imgs/f.png").convert()
-
-    ANCHO_MAPA, ALTO_MAPA = fondo.get_width(), fondo.get_height()
-
-    jugador = Jugador(
-        600.38, 480, 100, 120,
-        con_gravedad=True,
-        personaje=personaje_elegido,
-        ancho_max=ANCHO_MAPA,
-        ancho_hitbox=50,
-        alto_hitbox=80
-    )
-    jugador.suelo_y = 622
-    jugador.fuerza_salto = -23
-
-    pared = [
-        pygame.Rect(290, 527, 82, 80),
-        pygame.Rect(608, 498, 14, 82),
-        pygame.Rect(596, 564, 37, 40),
-        pygame.Rect(825, 561, 22, 42),
-        pygame.Rect(1200, 519, 60, 89),
-        pygame.Rect(1497, 559, 44, 50),
-        pygame.Rect(1511, 514, 17, 71),
-        pygame.Rect(1552, 528, 51, 80),
-        pygame.Rect(1798, 516, 65, 93),
-        pygame.Rect(1864, 526, 80, 81),
-    ]
-
+def d1l2p1():
+    ancho = 1200
+    alto = 700
+    ventana = pygame.display.set_mode((ancho, alto))
+   
+    
+    fondo = pygame.image.load("imgs/d1l2p1.png")
+    fondo = pygame.transform.scale(fondo, (ancho, alto))
+    
     clock = pygame.time.Clock()
-    run = True
-    contador_vida = 0
-    colisionando = False  # Flag para evitar contar múltiples veces por colisión continua
-
-    while run:
-        clock.tick(60)
-
-        global nivel_actual
-        nivel_actual = level2_parte1
-
-        # Chequear pausa
+    
+    while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_p:  # P para pausar
-                    global pausa
-                    pausa = not pausa
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    level2_parte1()
+                    
+        
+        ventana.blit(fondo, (0, 0))
+        pygame.display.update()
+        clock.tick(60)
 
-        if pausa:
-            menu_pausa()
-            continue  # Saltar el resto del bucle mientras pausa
-        teclas = pygame.key.get_pressed()
-        # Actualizar con paredes y límites del mapa integrados
-        jugador.actualizar(teclas, paredes=pared, limite_inferior=ALTO_MAPA)
 
-        # Chequear colisiones para contador de vida (solo primera vez por colisión)
-        colision_actual = any(jugador.rect.colliderect(p) for p in pared)
-        if colision_actual and not colisionando:
-            contador_vida += 1
-            colisionando = True
-        elif not colision_actual:
-            colisionando = False  # Resetear cuando deja de colisionar
 
-        if contador_vida >= 3:
-            muerto = True
-            pos_muerte = (jugador.rect.x, jugador.rect.y)  # Guardar posición de muerte
-            pantalla_muerte(personaje_elegido, nivel_actual)  # Mostrar pantalla de muerte
-            return
 
-        # Cámara (calculada después de actualizar)
-        cam_x = jugador.rect.x - ANCHO_WIN // 2
-        cam_y = jugador.rect.y - ALTO_WIN // 2
+def level2_parte1():
+    import pygame
+    import sys
+
+    pygame.init()
+
+    ANCHO = 800
+    ALTO = 600
+    ventana = pygame.display.set_mode((ANCHO, ALTO))
+    pygame.display.set_caption("Juego")
+
+    clock = pygame.time.Clock()
+
+    run = True
+    while run:
+        clock.tick(60)
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+
+        ventana.fill((0, 0, 0))
+        pygame.display.update()
+
+    pygame.quit()
+    sys.exit()
+
+    
+        
+def level2_parte2():
+        
+    ancho = 1200
+    global personaje_elegido
+    jugador = Jugador(69,520,28,72, con_gravedad=False, personaje=personaje_elegido, ancho_max=ancho) 
+    ANCHO_WIN, ALTO_WIN = 1400, 800
+    
+    
+    ventana = pygame.display.set_mode((ANCHO_WIN, ALTO_WIN))
+    pygame.display.set_caption("Juego con objetos en fila separados")
+
+    fondo = pygame.image.load("imgs/f2.png").convert()
+    ANCHO_MAPA, ALTO_MAPA = fondo.get_width(), fondo.get_height()
+
+    
+    vel = 10
+
+    vel_y = 0
+    gravedad = 1
+    saltando = False
+    fuerza_salto = -20
+
+    suelo = 600
+
+    objetos = []  
+    frame_counter = 0
+    frame_aparicion = 60
+    separacion_horizontal = 60
+
+    clock = pygame.time.Clock()
+    run = True
+    
+    contador_daño = 0
+    
+    
+    while run:
+        clock.tick(60)
+        frame_counter += 1
+        keys = pygame.key.get_pressed()
+
+        if keys[pygame.K_LEFT]:
+            jugador.x -= vel
+        if keys[pygame.K_RIGHT]:
+            jugador.x += vel
+        if keys[pygame.K_SPACE] and not saltando:
+            vel_y = fuerza_salto
+            saltando = True
+
+        vel_y += gravedad
+        jugador.y += vel_y
+        
+        
+
+        if jugador.y + jugador.height >= suelo:
+            jugador.y = suelo - jugador.height
+            vel_y = 0
+            saltando = False
+
+        jugador.x = max(0, min(jugador.x, ANCHO_MAPA - jugador.width))
+        jugador.y = max(0, min(jugador.y, ALTO_MAPA - jugador.height))
+
+        if jugador.x >= 600 and frame_counter >= frame_aparicion:
+            for i in range(5):
+                obj_x = 600 + i * separacion_horizontal
+                obj_y = 521
+                obj = pygame.Rect(obj_x, obj_y, 50, 50)
+                objetos.append(obj)
+            frame_counter = 0
+
+        for obj in objetos[:]:
+            obj.x += 10
+            if obj.x > ANCHO_MAPA:
+                objetos.remove(obj)
+
+        cam_x = jugador.x - ANCHO_WIN // 2
+        cam_y = jugador.y - ALTO_WIN // 2
         cam_x = max(0, min(cam_x, ANCHO_MAPA - ANCHO_WIN))
         cam_y = max(0, min(cam_y, ALTO_MAPA - ALTO_WIN))
 
         ventana.blit(fondo, (-cam_x, -cam_y))
-
-        # Dibujar paredes para debug
-        for p in pared:
-            pygame.draw.rect(ventana, (255, 0, 0), (p.x - cam_x, p.y - cam_y, p.width, p.height))
-
-        # Dibujar jugador (ajuste temporal para pantalla)
-        temp_x, temp_y = jugador.rect.x, jugador.rect.y
-        jugador.rect.x -= cam_x
-        jugador.rect.y -= cam_y
-        jugador.dibujar(ventana)
-        jugador.rect.x, jugador.rect.y = temp_x, temp_y  # Restaurar posición del mundo
+        pygame.draw.rect(ventana, (255, 0, 0), (jugador.x - cam_x, jugador.y - cam_y, jugador.width, jugador.height))
+        for obj in objetos:
+            pygame.draw.rect(ventana, (0, 255, 0), (obj.x - cam_x, obj.y - cam_y, obj.width, obj.height))
 
         pygame.display.update()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
+                
+        print(contador_daño)
 
     pygame.quit()
+
+

@@ -1099,7 +1099,7 @@ def l2p1():
                     en_suelo = False
 
         teclas = pygame.key.get_pressed()
-        jugador.actualizar(teclas, paredes=0)
+        jugador.actualizar(teclas, paredes=pared)
 
         jugador.rect.y += velocidad_y
         velocidad_y += gravedad
@@ -1112,7 +1112,7 @@ def l2p1():
         for i in pared:
             if jugador.rect.colliderect(i):
                 vida += 1
-                if vida==3:
+                if vida==1:
                     menulevels()
                     return
 

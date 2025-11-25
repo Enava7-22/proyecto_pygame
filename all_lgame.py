@@ -13,7 +13,8 @@ pausa = False
 personaje_elegido = None
 # Variable global para pausa y nivel actual
 pausa = False
-nivel_actual = None  # Apuntará a la función del nivel (ej. l1)
+nivel_actual = None  # Apuntará a la función del nivel
+# Variables globales para configuración
 
 def menu_pausa():
     global pausa
@@ -126,9 +127,8 @@ def menu_pausa():
 
 
 # Variable global para el personaje elegido 
-# # Pantalla de selección animada
 
-# Clase Jugador con animaciones ( movimiento, física y dibujo)
+# ( movimiento, física y dibujo)
 class Jugador:
     def __init__(self, x, y, width, height, con_gravedad=False, personaje='p1', ancho_max=1200, ancho_hitbox=20, alto_hitbox=30):
         # Parámetros opcionales para hitbox (por defecto 20x30)
@@ -138,37 +138,45 @@ class Jugador:
             ancho_hitbox,
             alto_hitbox
         )
-        self.velocidad_x = 10  # Horizontal (ajustable)
+        self.velocidad_x = 10  # Horizontal
         self.velocidad_y = 0
         self.gravedad = 1 if con_gravedad else 0
         self.fuerza_salto = -15 if con_gravedad else 0
         self.en_suelo = not con_gravedad
-        self.suelo_y = 690 if con_gravedad else None  # Por defecto; ajusta por nivel
+        self.suelo_y = 690 if con_gravedad else None  # Por defecto
         self.direccion = 1  # 1: derecha, -1: izquierda
         self.estado = 'idle'  # 'idle', 'walking', 'walking_up', 'walking_down'
         self.con_gravedad = con_gravedad
         self.personaje = personaje
         self.ancho_max = ancho_max  # Para límites horizontales
         
-        # Cargar frames para este personaje (de personajes.py)
-        frames_p1, frames_p2 = cargar_frames()
-        frames_globales = {'p1': frames_p1, 'p2': frames_p2}
-        self.frames = frames_globales[self.personaje]  # ([derecha], [izquierda], [arriba], [abajo])
-        
-        self.frames_derecha = [pygame.transform.scale(f, (width, height)) for f in self.frames[0]]
-        self.frames_izquierda = [pygame.transform.scale(f, (width, height)) for f in self.frames[1]]
-        self.frames_arriba = [pygame.transform.scale(f, (width, height)) for f in self.frames[2]]  # Nuevo: frames para arriba
-        self.frames_abajo = [pygame.transform.scale(f, (width, height)) for f in self.frames[3]]   # Nuevo: frames para abajo
-        
+        #Cargar frames para este personaje (de personajes.py)
+        frames_globales = cargar_frames()  # Ahora es diccionario
         try:
-            self.imagen_actual = self.frames_derecha[0]
-            self.tiene_frames = True
+            self.frames = frames_globales[self.personaje]  # ([derecha], [izquierda], [arriba], [abajo], [muerte])
+            
+            self.frames_derecha = [pygame.transform.scale(f, (width, height)) for f in self.frames[0]]
+            self.frames_izquierda = [pygame.transform.scale(f, (width, height)) for f in self.frames[1]]
+            self.frames_arriba = [pygame.transform.scale(f, (width, height)) for f in self.frames[2]]  # Nuevo: frames para arriba
+            self.frames_abajo = [pygame.transform.scale(f, (width, height)) for f in self.frames[3]]   # Nuevo: frames para abajo
+            
+            try:
+                self.imagen_actual = self.frames_derecha[0]
+                self.tiene_frames = True
+            except Exception as e:
+                self.imagen_estatica = pygame.image.load("imgs/personaje.png")
+                self.imagen_estatica = pygame.transform.scale(self.imagen_estatica, (width, height))
+                self.imagen_actual = self.imagen_estatica
+                self.tiene_frames = False
+                print(f"Advertencia: Usando imagen estática para {personaje}. Error: {e}")
+                
         except Exception as e:
             self.imagen_estatica = pygame.image.load("imgs/personaje.png")
             self.imagen_estatica = pygame.transform.scale(self.imagen_estatica, (width, height))
             self.imagen_actual = self.imagen_estatica
             self.tiene_frames = False
             print(f"Advertencia: Usando imagen estática para {personaje}. Error: {e}")
+
         
         self.frame_actual = 0
         self.tiempo_animacion = pygame.time.get_ticks()
@@ -190,9 +198,7 @@ class Jugador:
         else:
             self.estado = 'idle'
 
-        # ============================
-        # 1. MOVIMIENTO HORIZONTAL
-        # ============================
+        # MOVIMIENTO HORIZONTAL
         if teclas[pygame.K_LEFT] and self.rect.left > 0:
             self.rect.x -= self.velocidad_x
             self.direccion = -1
@@ -200,16 +206,13 @@ class Jugador:
             self.rect.x += self.velocidad_x
             self.direccion = 1
 
-        # Colisión horizontal (solo bloquear paredes verticales)
+        # Colisión horizontal
         if paredes:
             for p in paredes:
                 if self.rect.colliderect(p):
                     self.rect.x = x_ant  # revertir solo X
                     break
-
-        # ============================
-        # 2. MOVIMIENTO VERTICAL (GRAVEDAD)
-        # ============================
+        # MOVIMIENTO VERTICAL (GRAVEDAD)
         if self.con_gravedad:
 
             # SALTO
@@ -227,7 +230,7 @@ class Jugador:
                 self.velocidad_y = 0
                 self.en_suelo = True
 
-            # COLISIONES VERTICALES CORRECTAS
+            # COLISIONES VERTICALES 
             if paredes:
                 for p in paredes:
                     if self.rect.colliderect(p):
@@ -390,7 +393,7 @@ def menulevels():
                 if level1_presionado and botonl1.collidepoint(mouse_pos):
                     dialogo1()  # Acción para nivel 1
                 elif level2_presionado and botonl2.collidepoint(mouse_pos):
-                    dialogo1()  # Acción para nivel 2 
+                    level2_parte1()  # Acción para nivel 2 
                 elif level3_presionado and botonl3.collidepoint(mouse_pos):
                     dialogo1()  # Acción para nivel 3 
                 # Resetear estados

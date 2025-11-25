@@ -1091,8 +1091,15 @@ def l2p1():
     elevador = pygame.Rect(1286.17,566.79,35.97,87.74)
     vida = 0
     clock = pygame.time.Clock()
+    global nivel_actual
+    nivel_actual = l2p1
 
     while True:
+        
+
+
+
+        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()

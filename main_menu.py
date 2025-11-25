@@ -235,10 +235,10 @@ def configuracion():
 
 
 if __name__ == "__main__":
-<<<<<<< HEAD
+
     mainmenu() 
     
-    #hola
-=======
+  
+
     mainmenu()
->>>>>>> 5fc28d0ba4fcece03ed931013a949ba138f8c54a
+

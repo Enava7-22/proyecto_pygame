@@ -100,6 +100,10 @@ def elegir_personaje():
     
     ventana = pygame.display.set_mode((ancho, alto))
     pygame.display.set_caption("Elige tu personaje")
+    nubes = pygame.image.load("imgs/nubes.png")
+    nubes = pygame.transform.scale(nubes, (ancho, alto))
+    fondo = pygame.image.load("imgs/fondo_menu_si.png")
+    fondo = pygame.transform.scale(fondo, (ancho, alto))
     
     fuente = pygame.font.SysFont(None, 60)
     texto = fuente.render("Elige tu personaje", True, (255, 255, 255))
@@ -158,8 +162,18 @@ def elegir_personaje():
         frame_p2 = pygame.transform.scale(frame_p2, (150, 200))
         
         # Dibujar
-        ventana.fill((50, 50, 50))
+        ventana.blit(nubes, (0, 0))
+        ventana.blit(fondo, (0, 0))
+        transparente = pygame.Surface(ventana.get_size())
+        transparente.set_alpha(120)  # transparente
+        transparente.fill((69, 63, 63))
+        ventana.blit(transparente,(0,0))
         ventana.blit(texto, (ancho // 2 - texto.get_width() // 2, 50))
+        
+        pygame.draw.rect(ventana, (100, 100, 100), rect1)  
+        pygame.draw.rect(ventana, (50, 50, 50), rect1, 5) 
+        pygame.draw.rect(ventana, (100, 100, 100), rect2)  
+        pygame.draw.rect(ventana, (50, 50, 50), rect2, 5) 
         
         # Hover: Escala si mouse encima
         mouse_pos = pygame.mouse.get_pos()

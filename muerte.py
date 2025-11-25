@@ -47,7 +47,7 @@ def pantalla_muerte(personaje_elegido, nivel_actual):
         fuente_texto = pygame.font.Font("fuentes/leadcoat.ttf", 80)
     except:
         fuente_texto = pygame.font.SysFont("arial", 80)  # Fuente del sistema, más grande
-    texto_mensaje = fuente_texto.render("tu puedes sigue intentando", True, (255, 255, 255))
+    texto_mensaje = fuente_texto.render("Esa escuela no se salvara sola", True, (255, 255, 255))
     
     ventana_actual = pygame.display.get_surface()
     centro_x = ventana_actual.get_width() // 2

@@ -1071,7 +1071,7 @@ def l2p1():
     pygame.display.set_caption("minilevel limpio")
 
     global personaje_elegido
-    jugador = Jugador(486.86, 400, 100, 120, con_gravedad=False, personaje=personaje_elegido, ancho_max=ancho, ancho_hitbox=60, alto_hitbox=100)
+    jugador = Jugador(13.84, 575.78, 100, 120, con_gravedad=False, personaje=personaje_elegido, ancho_max=ancho, ancho_hitbox=60, alto_hitbox=100)
     fondo = pygame.image.load("imgs/f.png")
     fondo = pygame.transform.scale(fondo, (ancho, alto))
     velocidad_y = 0

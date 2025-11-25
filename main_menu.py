@@ -12,7 +12,14 @@ def mainmenu():
     ancho, alto = 1200, 700
     ancho_botones, alto_botones = 450, 120
     ancho_logo, alto_logo = 470, 270
-
+        
+    try:
+        pygame.mixer.music.load("music/Afternoon.mp3")
+        pygame.mixer.music.play(-1)  # Reproducir en loop
+        print("Música de muerte cargada y reproduciendo")  # Debug
+    except pygame.error as e:
+        print(f"Error cargando música: {e}")
+        
     ventana = pygame.display.set_mode((ancho, alto))
     pygame.display.set_caption("Integrador equipo 6")
 
@@ -75,6 +82,7 @@ def mainmenu():
             elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:  # Clic izquierdo arriba
                 if inicio_presionado and boton_inicio_rect.collidepoint(mouse_pos):
                     # Abrir pantalla de selección de personaje
+                    pygame.mixer.music.stop()
                     personaje_elegido = elegir_personaje()
                     all_lgame.personaje_elegido = personaje_elegido
                     all_lgame.menulevels()  # Inicia niveles

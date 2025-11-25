@@ -6,13 +6,13 @@ pygame.init()
 def l1():
     pass
 
-def dialogo1():
+def lastdialogo():
     ancho = 1200
-    alto = 700
+    alto = 800
     ventana = pygame.display.set_mode((ancho, alto))
    
     
-    fondo = pygame.image.load("imgs/d1l2p1.png")
+    fondo = pygame.image.load("imgs/df.png")
     fondo = pygame.transform.scale(fondo, (ancho, alto))
     
     clock = pygame.time.Clock()
@@ -30,4 +30,4 @@ def dialogo1():
         pygame.display.update()
         clock.tick(60)
 
-dialogo1()
+lastdialogo()

@@ -302,9 +302,10 @@ class Jugador:
         pos_x = self.rect.x + (self.rect.width - self.imagen_actual.get_width()) // 2
         pos_y = self.rect.bottom - self.imagen_actual.get_height()
         superficie.blit(self.imagen_actual, (pos_x, pos_y))
-        pygame.draw.rect(superficie, (0, 255, 0), self.rect, 2)
+        
 
 def dialogo1():
+    
     ancho = 1200
     alto = 700
     ventana =pygame.display.set_mode((ancho,alto))
@@ -521,6 +522,31 @@ def dialogo_final():
         clock.tick(60)
         pygame.display.update()
 
+
+
+def EL():
+    ancho = 1200
+    alto = 700
+    ventana = pygame.display.set_mode((ancho, alto))
+   
+    
+    fondo = pygame.image.load("imgs/EL.png")
+    fondo = pygame.transform.scale(fondo, (ancho, alto))
+    
+    clock = pygame.time.Clock()
+    
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    menulevels()
+        
+        ventana.blit(fondo, (0, 0))
+        pygame.display.update()
+        clock.tick(60)
 
 def l1():
     
@@ -1036,6 +1062,8 @@ def level4():
     ]
     red = (255,0,0)
     
+    ericka = pygame.Rect(402,175,60,61)
+    
     puerta = pygame.Rect(453.00,629.50,263.50,21.00)
     clock = pygame.time.Clock()
     
@@ -1050,6 +1078,9 @@ def level4():
         
         if jugador.rect.colliderect(puerta):
             l1()
+            return
+        if jugador.rect.colliderect(ericka):
+            EL()
             return
         
         
@@ -1231,7 +1262,7 @@ def l2p2():
                     break
                 
         if jugador.rect.colliderect(elevador):
-            l2p3()
+            lastdialogo()
             return
         
         
@@ -1256,3 +1287,27 @@ def l2p2():
             print("MUERTO")
             pygame.quit()
             sys.exit()
+def lastdialogo():
+    ancho = 1200
+    alto = 800
+    ventana = pygame.display.set_mode((ancho, alto))
+   
+    
+    fondo = pygame.image.load("imgs/df.png")
+    fondo = pygame.transform.scale(fondo, (ancho, alto))
+    
+    clock = pygame.time.Clock()
+    
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    menulevels()
+        
+        ventana.blit(fondo, (0, 0))
+        pygame.display.update()
+        clock.tick(60)
+

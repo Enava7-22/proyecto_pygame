@@ -13,7 +13,8 @@ pausa = False
 personaje_elegido = None
 # Variable global para pausa y nivel actual
 pausa = False
-nivel_actual = None  # Apuntará a la función del nivel (ej. l1)
+nivel_actual = None  # Apuntará a la función del nivel
+# Variables globales para configuración
 
 def menu_pausa():
     global pausa
@@ -126,9 +127,8 @@ def menu_pausa():
 
 
 # Variable global para el personaje elegido 
-# # Pantalla de selección animada
 
-# Clase Jugador con animaciones ( movimiento, física y dibujo)
+# ( movimiento, física y dibujo)
 class Jugador:
     def __init__(self, x, y, width, height, con_gravedad=False, personaje='p1', ancho_max=1200, ancho_hitbox=20, alto_hitbox=30):
         # Parámetros opcionales para hitbox (por defecto 20x30)
@@ -138,37 +138,45 @@ class Jugador:
             ancho_hitbox,
             alto_hitbox
         )
-        self.velocidad_x = 10  # Horizontal (ajustable)
+        self.velocidad_x = 10  # Horizontal
         self.velocidad_y = 0
         self.gravedad = 1 if con_gravedad else 0
         self.fuerza_salto = -15 if con_gravedad else 0
         self.en_suelo = not con_gravedad
-        self.suelo_y = 690 if con_gravedad else None  # Por defecto; ajusta por nivel
+        self.suelo_y = 690 if con_gravedad else None  # Por defecto
         self.direccion = 1  # 1: derecha, -1: izquierda
         self.estado = 'idle'  # 'idle', 'walking', 'walking_up', 'walking_down'
         self.con_gravedad = con_gravedad
         self.personaje = personaje
         self.ancho_max = ancho_max  # Para límites horizontales
         
-        # Cargar frames para este personaje (de personajes.py)
-        frames_p1, frames_p2 = cargar_frames()
-        frames_globales = {'p1': frames_p1, 'p2': frames_p2}
-        self.frames = frames_globales[self.personaje]  # ([derecha], [izquierda], [arriba], [abajo])
-        
-        self.frames_derecha = [pygame.transform.scale(f, (width, height)) for f in self.frames[0]]
-        self.frames_izquierda = [pygame.transform.scale(f, (width, height)) for f in self.frames[1]]
-        self.frames_arriba = [pygame.transform.scale(f, (width, height)) for f in self.frames[2]]  # Nuevo: frames para arriba
-        self.frames_abajo = [pygame.transform.scale(f, (width, height)) for f in self.frames[3]]   # Nuevo: frames para abajo
-        
+        #Cargar frames para este personaje (de personajes.py)
+        frames_globales = cargar_frames()  # Ahora es diccionario
         try:
-            self.imagen_actual = self.frames_derecha[0]
-            self.tiene_frames = True
+            self.frames = frames_globales[self.personaje]  # ([derecha], [izquierda], [arriba], [abajo], [muerte])
+            
+            self.frames_derecha = [pygame.transform.scale(f, (width, height)) for f in self.frames[0]]
+            self.frames_izquierda = [pygame.transform.scale(f, (width, height)) for f in self.frames[1]]
+            self.frames_arriba = [pygame.transform.scale(f, (width, height)) for f in self.frames[2]]  # Nuevo: frames para arriba
+            self.frames_abajo = [pygame.transform.scale(f, (width, height)) for f in self.frames[3]]   # Nuevo: frames para abajo
+            
+            try:
+                self.imagen_actual = self.frames_derecha[0]
+                self.tiene_frames = True
+            except Exception as e:
+                self.imagen_estatica = pygame.image.load("imgs/personaje.png")
+                self.imagen_estatica = pygame.transform.scale(self.imagen_estatica, (width, height))
+                self.imagen_actual = self.imagen_estatica
+                self.tiene_frames = False
+                print(f"Advertencia: Usando imagen estática para {personaje}. Error: {e}")
+                
         except Exception as e:
             self.imagen_estatica = pygame.image.load("imgs/personaje.png")
             self.imagen_estatica = pygame.transform.scale(self.imagen_estatica, (width, height))
             self.imagen_actual = self.imagen_estatica
             self.tiene_frames = False
             print(f"Advertencia: Usando imagen estática para {personaje}. Error: {e}")
+
         
         self.frame_actual = 0
         self.tiempo_animacion = pygame.time.get_ticks()
@@ -190,9 +198,7 @@ class Jugador:
         else:
             self.estado = 'idle'
 
-        # ============================
-        # 1. MOVIMIENTO HORIZONTAL
-        # ============================
+        # MOVIMIENTO HORIZONTAL
         if teclas[pygame.K_LEFT] and self.rect.left > 0:
             self.rect.x -= self.velocidad_x
             self.direccion = -1
@@ -200,16 +206,13 @@ class Jugador:
             self.rect.x += self.velocidad_x
             self.direccion = 1
 
-        # Colisión horizontal (solo bloquear paredes verticales)
+        # Colisión horizontal
         if paredes:
             for p in paredes:
                 if self.rect.colliderect(p):
                     self.rect.x = x_ant  # revertir solo X
                     break
-
-        # ============================
-        # 2. MOVIMIENTO VERTICAL (GRAVEDAD)
-        # ============================
+        # MOVIMIENTO VERTICAL (GRAVEDAD)
         if self.con_gravedad:
 
             # SALTO
@@ -227,7 +230,7 @@ class Jugador:
                 self.velocidad_y = 0
                 self.en_suelo = True
 
-            # COLISIONES VERTICALES CORRECTAS
+            # COLISIONES VERTICALES 
             if paredes:
                 for p in paredes:
                     if self.rect.colliderect(p):
@@ -1125,6 +1128,129 @@ def l2p1():
 
         pygame.display.flip()
         clock.tick(60)
-     
 
 
+
+
+def level2_parte1():
+    import pygame
+    import sys
+
+    pygame.init()
+
+    ANCHO = 800
+    ALTO = 600
+    ventana = pygame.display.set_mode((ANCHO, ALTO))
+    pygame.display.set_caption("Juego")
+
+    clock = pygame.time.Clock()
+
+    run = True
+    while run:
+        clock.tick(60)
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+
+        ventana.fill((0, 0, 0))
+        pygame.display.update()
+
+    pygame.quit()
+    sys.exit()
+
+    
+        
+def level2_parte2():
+        
+    ancho = 1200
+    global personaje_elegido
+    jugador = Jugador(69,520,28,72, con_gravedad=False, personaje=personaje_elegido, ancho_max=ancho) 
+    ANCHO_WIN, ALTO_WIN = 1400, 800
+    
+    
+    ventana = pygame.display.set_mode((ANCHO_WIN, ALTO_WIN))
+    pygame.display.set_caption("Juego con objetos en fila separados")
+
+    fondo = pygame.image.load("imgs/f2.png").convert()
+    ANCHO_MAPA, ALTO_MAPA = fondo.get_width(), fondo.get_height()
+
+    
+    vel = 10
+
+    vel_y = 0
+    gravedad = 1
+    saltando = False
+    fuerza_salto = -20
+
+    suelo = 600
+
+    objetos = []  
+    frame_counter = 0
+    frame_aparicion = 60
+    separacion_horizontal = 60
+
+    clock = pygame.time.Clock()
+    run = True
+    
+    contador_daño = 0
+    
+    
+    while run:
+        clock.tick(60)
+        frame_counter += 1
+        keys = pygame.key.get_pressed()
+
+        if keys[pygame.K_LEFT]:
+            jugador.x -= vel
+        if keys[pygame.K_RIGHT]:
+            jugador.x += vel
+        if keys[pygame.K_SPACE] and not saltando:
+            vel_y = fuerza_salto
+            saltando = True
+
+        vel_y += gravedad
+        jugador.y += vel_y
+        
+        
+
+        if jugador.y + jugador.height >= suelo:
+            jugador.y = suelo - jugador.height
+            vel_y = 0
+            saltando = False
+
+        jugador.x = max(0, min(jugador.x, ANCHO_MAPA - jugador.width))
+        jugador.y = max(0, min(jugador.y, ALTO_MAPA - jugador.height))
+
+        if jugador.x >= 600 and frame_counter >= frame_aparicion:
+            for i in range(5):
+                obj_x = 600 + i * separacion_horizontal
+                obj_y = 521
+                obj = pygame.Rect(obj_x, obj_y, 50, 50)
+                objetos.append(obj)
+            frame_counter = 0
+
+        for obj in objetos[:]:
+            obj.x += 10
+            if obj.x > ANCHO_MAPA:
+                objetos.remove(obj)
+
+        cam_x = jugador.x - ANCHO_WIN // 2
+        cam_y = jugador.y - ALTO_WIN // 2
+        cam_x = max(0, min(cam_x, ANCHO_MAPA - ANCHO_WIN))
+        cam_y = max(0, min(cam_y, ALTO_MAPA - ALTO_WIN))
+
+        ventana.blit(fondo, (-cam_x, -cam_y))
+        pygame.draw.rect(ventana, (255, 0, 0), (jugador.x - cam_x, jugador.y - cam_y, jugador.width, jugador.height))
+        for obj in objetos:
+            pygame.draw.rect(ventana, (0, 255, 0), (obj.x - cam_x, obj.y - cam_y, obj.width, obj.height))
+
+        pygame.display.update()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+                
+        print(contador_daño)
+
+    pygame.quit()

@@ -11,13 +11,15 @@ def mainmenu():
     pygame.init()  
     ancho, alto = 1200, 700
     ancho_botones, alto_botones = 450, 120
-    ancho_logo, alto_logo = 500, 300
+    ancho_logo, alto_logo = 470, 270
 
     ventana = pygame.display.set_mode((ancho, alto))
     pygame.display.set_caption("Integrador equipo 6")
 
     # Cargar imágenes
-    fondo = pygame.image.load("imgs/fondo_principal.jpeg")
+    nubes = pygame.image.load("imgs/nubes.png")
+    nubes = pygame.transform.scale(nubes, (ancho, alto))
+    fondo = pygame.image.load("imgs/fondo_menu_si.png")
     fondo = pygame.transform.scale(fondo, (ancho, alto))
     logo = pygame.image.load("imgs/logo_juego.png")
     logo = pygame.transform.scale(logo, (ancho_logo, alto_logo))
@@ -50,6 +52,10 @@ def mainmenu():
     x1 = 0
     x2 = ancho
     
+    x1_nubes = 0
+    x2_nubes = ancho
+    velocidad_nubes = 2
+    
     reloj = pygame.time.Clock()
     ejecutar = True
 
@@ -68,7 +74,7 @@ def mainmenu():
                     salir_presionado = True
             elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:  # Clic izquierdo arriba
                 if inicio_presionado and boton_inicio_rect.collidepoint(mouse_pos):
-                    # Acción: Abrir pantalla de selección de personaje
+                    # Abrir pantalla de selección de personaje
                     personaje_elegido = elegir_personaje()
                     all_lgame.personaje_elegido = personaje_elegido
                     all_lgame.menulevels()  # Inicia niveles
@@ -81,11 +87,19 @@ def mainmenu():
                 config_presionado = False
                 salir_presionado = False
 
+        x1_nubes -= velocidad_nubes
+        x2_nubes -= velocidad_nubes
+        if x1_nubes <= -ancho:
+            x1_nubes = x2_nubes + ancho
+        if x2_nubes <= -ancho:
+            x2_nubes = x1_nubes + ancho
+            
         if x1 <= -ancho:
             x1 = x2 + ancho
         if x2 <= -ancho:
             x2 = x1 + ancho
-        
+        ventana.blit(nubes, (x1_nubes, 0))
+        ventana.blit(nubes, (x2_nubes, 0))
         ventana.blit(fondo, (x1, 0))
         ventana.blit(fondo, (x2, 0))
         ventana.blit(logo, (x_logo, 0))

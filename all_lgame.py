@@ -1061,6 +1061,9 @@ def level4():
         clock.tick(60)
         
         
+
+
+
 def l2p1():
     ancho = 1400
     alto = 700
@@ -1077,8 +1080,6 @@ def l2p1():
     piso = 580
     en_suelo = True
     
-    vida = 0
-    
     pared = [
         pygame.Rect(119.44,593.89,80.00,78.33),
         pygame.Rect(309.01,579.32,91.90,89.92),
@@ -1088,10 +1089,110 @@ def l2p1():
     ]
     
     elevador = pygame.Rect(1286.17,566.79,35.97,87.74)
-
+    vida = 0
     clock = pygame.time.Clock()
 
     while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE and en_suelo:
+                    velocidad_y = fuerza_salto
+                    en_suelo = False
+
+        teclas = pygame.key.get_pressed()
+        jugador.actualizar(teclas, paredes=pared)
+
+        jugador.rect.y += velocidad_y
+        velocidad_y += gravedad
+
+        if jugador.rect.y >= piso:
+            jugador.rect.y = piso
+            velocidad_y = 0
+            en_suelo = True
+        
+        for i in pared:
+            if jugador.rect.colliderect(i):
+                vida += 1
+                if vida >= 3:
+                    global muerto, pos_muerte
+                    muerto = True
+                    pos_muerte = (jugador.rect.x, jugador.rect.y)
+                    print(f"muerto set a True: {muerto}")  # Debug
+                    pantalla_muerte(personaje_elegido, nivel_actual)
+                    l2p1()
+                    return
+        if jugador.rect.colliderect(elevador):
+            l2p2()
+            return
+        
+
+        ventana.blit(fondo, (0, 0))
+        jugador.dibujar(ventana)
+       
+        
+        pygame.draw.rect(ventana, (0, 255, 0), elevador)
+
+        pygame.display.flip()
+        clock.tick(60)
+    
+def l2p2():
+    ancho = 1400
+    alto = 700
+    ventana = pygame.display.set_mode((ancho, alto))
+    pygame.display.set_caption("minilevel limpio")
+
+    global personaje_elegido
+    jugador = Jugador(1282.29, 359.04, 100, 120, con_gravedad=False,
+                      personaje=personaje_elegido, ancho_max=ancho,
+                      ancho_hitbox=60, alto_hitbox=100)
+
+    fondo = pygame.image.load("imgs/f2.png")
+    fondo = pygame.transform.scale(fondo, (ancho, alto))
+    
+    obj_img = pygame.image.load("imgs/bola.png").convert_alpha()
+    obj_img = pygame.transform.scale(obj_img, (40, 40))
+
+    velocidad_y = 0
+    gravedad = 1
+    fuerza_salto = -18
+    piso = 350
+    en_suelo = True
+
+    clock = pygame.time.Clock()
+
+    ancho_rect = 40
+    alto_rect = 40
+    sep = 10
+    velocidad = 6
+
+    vida = 12
+    hit_cooldown = 0
+
+    grupo = []
+
+    x = -4000
+    for _ in range(1000):
+        for i in range(3):
+            grupo.append(pygame.Rect(x, 420, ancho_rect, alto_rect))
+            x += ancho_rect + sep
+        x += 240
+        for i in range(3):
+            grupo.append(pygame.Rect(x, 420, ancho_rect, alto_rect))
+            x += ancho_rect + sep
+        x += 240
+        
+        
+    elevador = pygame.Rect(133.72,362.70,31.14,84.26)
+
+    while True:
+        dt = clock.tick(60) / 1000
+        hit_cooldown -= dt
+        if hit_cooldown < 0:
+            hit_cooldown = 0
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -1111,146 +1212,40 @@ def l2p1():
             jugador.rect.y = piso
             velocidad_y = 0
             en_suelo = True
-            
-        for i in pared:
-            if jugador.rect.colliderect(i):
-                vida += 1
-                if vida==3:
-                    menulevels()
-                    return
+
+        for r in grupo:
+            r.x += velocidad
+
+        if hit_cooldown == 0:
+            for r in grupo:
+                if jugador.rect.colliderect(r):
+                    vida -= 1
+                    hit_cooldown = 0.5
+                    break
+                
+        if jugador.rect.colliderect(elevador):
+            l2p3()
+            return
+        
+        
+        if vida <= 0:
+            global muerto, pos_muerte
+            muerto = True
+            pos_muerte = (jugador.rect.x, jugador.rect.y)
+            print(f"muerto set a True: {muerto}")  # Debug
+            pantalla_muerte(personaje_elegido, nivel_actual)
+            l2p2()
+            return
 
         ventana.blit(fondo, (0, 0))
         jugador.dibujar(ventana)
-        for p in pared:
-            pygame.draw.rect(ventana, (255, 0, 0), p)
-        
-        pygame.draw.rect(ventana, (0, 255, 0), elevador)
+
+        for r in grupo:
+            ventana.blit(obj_img, (r.x, r.y))
 
         pygame.display.flip()
-        clock.tick(60)
 
-
-
-
-def level2_parte1():
-    import pygame
-    import sys
-
-    pygame.init()
-
-    ANCHO = 800
-    ALTO = 600
-    ventana = pygame.display.set_mode((ANCHO, ALTO))
-    pygame.display.set_caption("Juego")
-
-    clock = pygame.time.Clock()
-
-    run = True
-    while run:
-        clock.tick(60)
-        
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
-
-        ventana.fill((0, 0, 0))
-        pygame.display.update()
-
-    pygame.quit()
-    sys.exit()
-
-    
-        
-def level2_parte2():
-        
-    ancho = 1200
-    global personaje_elegido
-    jugador = Jugador(69,520,28,72, con_gravedad=False, personaje=personaje_elegido, ancho_max=ancho) 
-    ANCHO_WIN, ALTO_WIN = 1400, 800
-    
-    
-    ventana = pygame.display.set_mode((ANCHO_WIN, ALTO_WIN))
-    pygame.display.set_caption("Juego con objetos en fila separados")
-
-    fondo = pygame.image.load("imgs/f2.png").convert()
-    ANCHO_MAPA, ALTO_MAPA = fondo.get_width(), fondo.get_height()
-
-    
-    vel = 10
-
-    vel_y = 0
-    gravedad = 1
-    saltando = False
-    fuerza_salto = -20
-
-    suelo = 600
-
-    objetos = []  
-    frame_counter = 0
-    frame_aparicion = 60
-    separacion_horizontal = 60
-
-    clock = pygame.time.Clock()
-    run = True
-    
-    contador_daño = 0
-    
-    
-    while run:
-        clock.tick(60)
-        frame_counter += 1
-        keys = pygame.key.get_pressed()
-
-        if keys[pygame.K_LEFT]:
-            jugador.x -= vel
-        if keys[pygame.K_RIGHT]:
-            jugador.x += vel
-        if keys[pygame.K_SPACE] and not saltando:
-            vel_y = fuerza_salto
-            saltando = True
-
-        vel_y += gravedad
-        jugador.y += vel_y
-        
-        
-
-        if jugador.y + jugador.height >= suelo:
-            jugador.y = suelo - jugador.height
-            vel_y = 0
-            saltando = False
-
-        jugador.x = max(0, min(jugador.x, ANCHO_MAPA - jugador.width))
-        jugador.y = max(0, min(jugador.y, ALTO_MAPA - jugador.height))
-
-        if jugador.x >= 600 and frame_counter >= frame_aparicion:
-            for i in range(5):
-                obj_x = 600 + i * separacion_horizontal
-                obj_y = 521
-                obj = pygame.Rect(obj_x, obj_y, 50, 50)
-                objetos.append(obj)
-            frame_counter = 0
-
-        for obj in objetos[:]:
-            obj.x += 10
-            if obj.x > ANCHO_MAPA:
-                objetos.remove(obj)
-
-        cam_x = jugador.x - ANCHO_WIN // 2
-        cam_y = jugador.y - ALTO_WIN // 2
-        cam_x = max(0, min(cam_x, ANCHO_MAPA - ANCHO_WIN))
-        cam_y = max(0, min(cam_y, ALTO_MAPA - ALTO_WIN))
-
-        ventana.blit(fondo, (-cam_x, -cam_y))
-        pygame.draw.rect(ventana, (255, 0, 0), (jugador.x - cam_x, jugador.y - cam_y, jugador.width, jugador.height))
-        for obj in objetos:
-            pygame.draw.rect(ventana, (0, 255, 0), (obj.x - cam_x, obj.y - cam_y, obj.width, obj.height))
-
-        pygame.display.update()
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
-                
-        print(contador_daño)
-
-    pygame.quit()
+        if vida <= 0:
+            print("MUERTO")
+            pygame.quit()
+            sys.exit()

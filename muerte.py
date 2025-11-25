@@ -10,6 +10,14 @@ def pantalla_muerte(personaje_elegido, nivel_actual):
     muerto = True
     print("Entrando a pantalla_muerte")  # Debug
     
+    # Cargar y reproducir música de muerte
+    try:
+        pygame.mixer.music.load("music/Moog City (cover).mp3")
+        pygame.mixer.music.play(-1)  # Reproducir en loop
+        print("Música de muerte cargada y reproduciendo")  # Debug
+    except pygame.error as e:
+        print(f"Error cargando música: {e}")
+    
     # Aseguramos que los frames estén cargados
     cargar_frames()
     
@@ -93,12 +101,14 @@ def pantalla_muerte(personaje_elegido, nivel_actual):
             elif fade_completo and event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                 if reiniciar_presionado and rect_reiniciar.collidepoint(mouse_pos):
                     print("Reiniciando nivel")  # Debug
+                    pygame.mixer.music.stop()
                     muerto = False
                     if nivel_actual:
                         nivel_actual()
                     return
                 elif menu_presionado and rect_menu.collidepoint(mouse_pos):
                     print("Saliendo al menú")  # Debug
+                    pygame.mixer.music.stop()
                     muerto = False
                     from main_menu import mainmenu
                     mainmenu()
@@ -146,5 +156,4 @@ def pantalla_muerte(personaje_elegido, nivel_actual):
 
         pygame.display.flip()
         pygame.time.Clock().tick(60)
-
     print("Saliendo de pantalla_muerte")  # Debug

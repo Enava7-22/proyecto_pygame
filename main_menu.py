@@ -194,6 +194,10 @@ def configuracion():
                     # Mover slider
                     slider_pos = max(400, min(mouse_pos[0], 800))
                     volumen = int((slider_pos - 400) / 400 * 100)
+                    if volumen == 0:
+                        pygame.mixer.music.stop()
+                    else:
+                        pygame.mixer.music.set_volume(volumen / 100)
                 elif rect_boton_salir.collidepoint(mouse_pos):
                     salir_presionado = True
             elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
@@ -251,8 +255,4 @@ def configuracion():
 if __name__ == "__main__":
 
     mainmenu() 
-    
-  
-
-    mainmenu()
 

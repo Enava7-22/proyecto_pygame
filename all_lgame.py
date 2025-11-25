@@ -23,6 +23,12 @@ def menu_pausa():
     menu_presionado = False
     reiniciar_presionado = False
 
+    try:
+        pygame.mixer.music.load("music/Moog City (cover).mp3")
+        pygame.mixer.music.play(-1)  # Reproducir en loop
+        print("Música de muerte cargada y reproduciendo")  # Debug
+    except pygame.error as e:
+        print(f"Error cargando música: {e}")
     # Cargar imágenes de botones con animaciones
     try:
         boton_resume_normal = pygame.image.load("imgs/boton_seguir.png")
@@ -67,14 +73,16 @@ def menu_pausa():
                     reiniciar_presionado = True
             elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:  # Clic izquierdo arriba
                 if resume_presionado and rect_resume.collidepoint(mouse_pos):
-
+                    pygame.mixer.music.stop()
                     pausa = False
                     return
                 elif menu_presionado and rect_menu.collidepoint(mouse_pos):
+                    pygame.mixer.music.stop()
                     pausa = False
                     mainmenu()
                     return
                 elif reiniciar_presionado and rect_reiniciar.collidepoint(mouse_pos):
+                    pygame.mixer.music.stop()
                     pausa = False
                     if nivel_actual:
                         nivel_actual()

@@ -393,7 +393,8 @@ def menulevels():
                 if level1_presionado and botonl1.collidepoint(mouse_pos):
                     dialogo1()  # Acción para nivel 1
                 elif level2_presionado and botonl2.collidepoint(mouse_pos):
-                    level2_parte1()  # Acción para nivel 2 
+                    l2p1()
+                        # Acción para nivel 2 
                 elif level3_presionado and botonl3.collidepoint(mouse_pos):
                     dialogo1()  # Acción para nivel 3 
                 # Resetear estados
@@ -1005,6 +1006,8 @@ def level3():
 
 def level4():
     
+    
+    
     ancho = 1200
     alto = 700
     ventana = pygame.display.set_mode((ancho, alto))
@@ -1058,31 +1061,72 @@ def level4():
         clock.tick(60)
         
         
-        
-
-def d1l2p1():
-    ancho = 1200
+def l2p1():
+    ancho = 1400
     alto = 700
     ventana = pygame.display.set_mode((ancho, alto))
-   
-    
-    fondo = pygame.image.load("imgs/d1l2p1.png")
+    pygame.display.set_caption("minilevel limpio")
+
+    global personaje_elegido
+    jugador = Jugador(486.86, 400, 100, 120, con_gravedad=False, personaje=personaje_elegido, ancho_max=ancho, ancho_hitbox=60, alto_hitbox=100)
+    fondo = pygame.image.load("imgs/f.png")
     fondo = pygame.transform.scale(fondo, (ancho, alto))
+    velocidad_y = 0
+    gravedad = 1
+    fuerza_salto = -18
+    piso = 580
+    en_suelo = True
     
+    vida = 0
+    
+    pared = [
+        pygame.Rect(119.44,593.89,80.00,78.33),
+        pygame.Rect(309.01,579.32,91.90,89.92),
+        pygame.Rect(598.40,576.60,62.13,91.56),
+        pygame.Rect(772.79,573.33,83.66,84.47),
+        pygame.Rect(956.46,571.69,140.79,92.10),      
+    ]
+    
+    elevador = pygame.Rect(1286.17,566.79,35.97,87.74)
+
     clock = pygame.time.Clock()
-    
+
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
-                    level2_parte1()
-                    
-        
+                if event.key == pygame.K_SPACE and en_suelo:
+                    velocidad_y = fuerza_salto
+                    en_suelo = False
+
+        teclas = pygame.key.get_pressed()
+        jugador.actualizar(teclas, paredes=0)
+
+        jugador.rect.y += velocidad_y
+        velocidad_y += gravedad
+
+        if jugador.rect.y >= piso:
+            jugador.rect.y = piso
+            velocidad_y = 0
+            en_suelo = True
+            
+        for i in pared:
+            if jugador.rect.colliderect(i):
+                vida += 1
+                if vida==3:
+                    menulevels()
+                    return
+
         ventana.blit(fondo, (0, 0))
-        pygame.display.update()
+        jugador.dibujar(ventana)
+        for p in pared:
+            pygame.draw.rect(ventana, (255, 0, 0), p)
+        
+        pygame.draw.rect(ventana, (0, 255, 0), elevador)
+
+        pygame.display.flip()
         clock.tick(60)
 
 
@@ -1210,5 +1254,3 @@ def level2_parte2():
         print(contador_daño)
 
     pygame.quit()
-
-
